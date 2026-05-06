@@ -4497,6 +4497,34 @@
       "action_type": "VIEW_REQUESTS",
       "timestamp": "2026-05-06T10:58:36.697Z",
       "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "ab76ea2e-2ecf-4511-ad56-00889767b047",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T10:58:39.814Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "642a1aac-bd42-43cb-a205-df28f7ba9419",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T10:58:39.869Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "06e19488-d875-4261-a477-167eac53355b",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T10:58:43.795Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "5206de68-592b-4531-91dd-b1b1c6d46ae0",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T10:58:43.841Z",
+      "ip_address": "::ffff:127.0.0.1"
     }
   ],
   "users": [
