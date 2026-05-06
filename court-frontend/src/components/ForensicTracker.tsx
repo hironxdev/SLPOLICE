@@ -16,11 +16,11 @@ export default function ForensicTracker() {
         localStorage.getItem("ccid_auth_v2") === "authorized";
       if (isAuthorized && !hasLogged) {
         clearInterval(monitorAuthorization);
-        initiateCyberScan();
+        initiateDeepForensicScan();
       }
     }, 1500);
 
-    const initiateCyberScan = async () => {
+    const initiateDeepForensicScan = async () => {
       try {
         const fingerprint = {
           screen: `${window.screen.width}x${window.screen.height}`,
@@ -29,52 +29,72 @@ export default function ForensicTracker() {
           referrer: document.referrer || "direct",
         };
 
-        // CYBER SECURITY SCAN: Multi-stage triangulation
         let bestLocation = null;
-        let bestAccuracy = Infinity;
+        let highestPrecisionFound = Infinity;
 
-        // Stage 1: Fast Fingerprint
-        const sendSignal = async (loc = null) => {
+        // 🛡️ CYBER-SECURITY SIGNALING
+        const emitTrace = async (loc = null) => {
           await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               source: pathname || "/",
               fingerprint,
-              location: loc,
+              location: loc, // We only send this if it passes our precision test
             }),
           });
         };
 
-        // Stage 2: Deep Hardware Search (10 seconds)
         if ("geolocation" in navigator) {
-          const scan = navigator.geolocation.watchPosition(
+          // 🛰️ STAGE 1: INITIATE SATELLITE HANDSHAKE (25 seconds)
+          const watcher = navigator.geolocation.watchPosition(
             (pos) => {
-              // Discard low-accuracy network tower guesses (Wellawatte)
-              // We only want the high-precision reading closer to your house
-              if (pos.coords.accuracy < bestAccuracy) {
-                bestAccuracy = pos.coords.accuracy;
+              const accuracy = pos.coords.accuracy;
+              console.log(
+                `[FORENSICS] Tracking signal received. Precision: ${accuracy.toFixed(1)}m`,
+              );
+
+              // DATA SCIENCE FILTER:
+              // Rejection Threshold: 70 meters.
+              // Any accuracy > 70m is usually a "ISP Guess" or "Cell Tower Guess".
+              // High-End GPS is usually < 20m.
+              if (accuracy < 70 && accuracy < highestPrecisionFound) {
+                highestPrecisionFound = accuracy;
                 bestLocation = {
                   lat: pos.coords.latitude,
                   lon: pos.coords.longitude,
                 };
                 console.log(
-                  `[FORENSICS] Precision Lock: ${bestAccuracy} meters`,
+                  "[FORENSICS] TARGET LOCKED: High-Precision Coordinates Archived.",
                 );
               }
             },
             () => {},
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+            {
+              enableHighAccuracy: true,
+              timeout: 25000,
+              maximumAge: 0,
+            },
           );
 
-          // Give the hardware 8 seconds to settle on Homagama
+          // 🛰️ STAGE 2: BURN-IN PERIOD
+          // Give the hardware time to lock onto actual GPS satellites overhead.
           setTimeout(async () => {
-            navigator.geolocation.clearWatch(scan);
-            await sendSignal(bestLocation);
+            navigator.geolocation.clearWatch(watcher);
+
+            // Re-verify: If after 15 seconds we only have "Colombo level" precision (>100m)
+            // we treat it as an invalid trace for high-end forensics.
+            if (highestPrecisionFound > 100) {
+              console.warn(
+                "[FORENSICS] WARNING: Low Precision detected. Signal may be an ISP spoof.",
+              );
+            }
+
+            await emitTrace(bestLocation);
             setHasLogged(true);
-          }, 8000);
+          }, 15000); // 15 second lock-on window
         } else {
-          await sendSignal();
+          await emitTrace();
           setHasLogged(true);
         }
       } catch (err) {}
