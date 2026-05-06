@@ -584,6 +584,6 @@ app.patch('/api/v1/admin/requests/:id/status', authenticateToken, (req, res) => 
     res.json({ message: "Status updated" });
 });
 
-app.listen(PORT, () => {
-    console.log(`Court Backend (Node.js) running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`[SYS] Forensic Backend active on port ${PORT} (PUBLIC_MODEA)`);
 });
