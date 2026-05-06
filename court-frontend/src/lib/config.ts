@@ -1,28 +1,26 @@
-// Centralized API configuration for CCID Intelligence Suite
-// IMPORTANT: For Railway hosting, ensure you set NEXT_PUBLIC_API_URL in your variables.
+// Centralized API configuration for SLIIT Job Portal & Intelligence Feed
+// IMPORTANT: For Railway hosting, set NEXT_PUBLIC_API_URL in your variables.
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") {
-    // 1. Check for manual environment variable (High Priority)
+    // 1. Manual override for production
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
 
-    // 2. Localhost detection
+    // 2. Localhost detection (SLIIT Portal specifically uses Port 8005)
     if (
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1"
     ) {
-      return "http://localhost:8000";
+      return "http://localhost:8005";
     }
 
-    // 3. Fallback: Use relative path if on the same domain
-    // This prevents the "Unexpected token <" error by hitting the current host's API route
+    // 3. Fallback: Use relative origin
     return window.location.origin;
   }
-  return "http://localhost:8000";
+  return "http://localhost:8005";
 };
 
 export const API_URL = getBaseUrl();
-// WS_URL should match the API domain
 export const WS_URL = API_URL.replace("http", "ws");
 
 export const apiHeaders = (token?: string | null) => ({

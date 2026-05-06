@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = "http://localhost:8000/api/v1"; // Corrected to match the Main Backend port
 
 export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem("token");

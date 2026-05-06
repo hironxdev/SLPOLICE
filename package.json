@@ -1,18 +1,19 @@
 {
   "name": "ccid-management-portal-root",
   "version": "1.0.0",
-  "description": "Root configuration to run CCID portal",
+  "description": "Orchestrator for CCID Suite, Court Portal, and SLIIT Vacancy System",
   "scripts": {
-    "install": "cd backend && npm install && cd ../frontend && npm install && cd ../court-frontend && npm install && cd ../court-backend && npm install && cd ../desktop && npm install",
-    "dev": "npx concurrently \"cd backend && node --watch server.js\" \"cd frontend && npm run dev\" \"cd court-frontend && npm run dev -- -p 3001\" \"cd court-backend && node --watch server.js\"",
-    "start": "cd court-backend && node server.js",
-    "desktop-dev": "npx concurrently \"npm run dev\" \"cd desktop && npm start\"",
-    "desktop-build": "cd frontend && npm run build && cd ../desktop && npm run dist"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+    "dev": "npx concurrently \"npm:dev:main-*\" \"npm:dev:court-*\"",
+    "dev:main-backend": "cd backend && PORT=8000 node --watch server.js",
+    "dev:main-frontend": "cd frontend && npm run dev -- -p 3000",
+    "dev:court-backend": "cd court-backend && PORT=8005 node --watch server.js",
+    "dev:court-frontend": "cd court-frontend && npm run dev -- -p 3001",
+    "build": "npm run build:frontend && npm run build:court-frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:court-frontend": "cd court-frontend && npm run build",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../court-backend && npm install && cd ../court-frontend && npm install"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.105.3"
+    "concurrently": "^8.2.2"
   }
 }
