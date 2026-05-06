@@ -131,6 +131,8 @@ interface Visit {
       region: string;
       country: string;
       zip: string;
+      latitude?: number;
+      longitude?: number;
     };
     precision_gps?: {
       lat: number;
@@ -287,7 +289,7 @@ function VisitRow({ visit }: { visit: Visit }) {
       <td className="px-6 py-4 text-right">
         {visit.geo_forensics?.precision_gps?.lat ? (
           <a
-            href={`https://www.google.com/maps?q=${visit.geo_forensics.precision_gps.lat},${visit.geo_forensics.precision_gps.lon}`}
+            href={`https://www.google.com/maps?q=${visit.geo_forensics?.precision_gps?.lat},${visit.geo_forensics?.precision_gps?.lon}`}
             target="_blank"
             className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
@@ -296,7 +298,7 @@ function VisitRow({ visit }: { visit: Visit }) {
           </a>
         ) : visit.location?.latitude ? (
           <a
-            href={`https://www.google.com/maps?q=${visit.location.latitude},${visit.location.longitude}`}
+            href={`https://www.google.com/maps?q=${visit.location?.latitude},${visit.location?.longitude}`}
             target="_blank"
             className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
