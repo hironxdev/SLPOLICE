@@ -1,0 +1,29 @@
+[build]
+  # The directory where Netlify will look for your build scripts and dependencies
+  base = "court-frontend"
+  
+  # The command to build your Next.js application
+  command = "npm run build"
+  
+  # The directory that contains the deploy-ready assets after build
+  publish = ".next"
+
+[build.environment]
+  # Ensure Node.js version is compatible with Next.js 15+
+  NODE_VERSION = "20"
+  NEXT_USE_NETLIFY_EDGE = "true"
+
+[[plugins]]
+  # Essential Next.js plugin for Netlify
+  package = "@netlify/plugin-nextjs"
+
+# Optional: Configuration for the CCID Cyber Terminal Bridge 
+# to ensure consistent headers across the portal
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(self)"
