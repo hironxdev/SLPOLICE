@@ -30601,7 +30601,16 @@
         "language": "en-GB"
       },
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
-      "timestamp": "2026-05-06T12:28:11.343Z"
+      "timestamp": "2026-05-06T12:28:11.343Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     }
   ],
   "evidence": [
