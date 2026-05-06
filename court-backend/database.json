@@ -24657,6 +24657,20 @@
       "action_type": "VIEW_REQUESTS",
       "timestamp": "2026-05-06T12:33:05.924Z",
       "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "07746e33-2833-4d2a-a5eb-8b4d0b65b514",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:33:09.329Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "65178af9-d19f-4505-8487-972950777319",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:33:09.385Z",
+      "ip_address": "::ffff:127.0.0.1"
     }
   ],
   "users": [
