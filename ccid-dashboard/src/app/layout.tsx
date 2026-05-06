@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SL Police CCID - Visitor Intelligence Dashboard",
+  title: "SLIT |LK",
   description:
     "Administrative dashboard for monitoring visitor intelligence and forensic analysis.",
   icons: {
