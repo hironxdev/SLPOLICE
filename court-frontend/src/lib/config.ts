@@ -1,27 +1,29 @@
 // Centralized API configuration for CCID Intelligence Suite
-// IMPORTANT: For Railway hosting, ensure you set these in the dashboard:
-// NEXT_PUBLIC_API_URL = https://your-backend-service.up.railway.app
-// NEXT_PUBLIC_WS_URL = wss://your-backend-service.up.railway.app
+// IMPORTANT: For Railway hosting, ensure you set NEXT_PUBLIC_API_URL in your variables.
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") {
-    // If hosted on Railway but env var is missing, try to guess or use secure relative path
+    // 1. Check for manual environment variable (High Priority)
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
 
-    // Default to localhost for secondary local dev, but force https for railway domains
-    if (window.location.hostname.includes("railway.app")) {
-      // Note: User must set the actual backend URL in Railway Environment Variables
-      // This is a placeholder to prevent "Failed to Fetch" from localhost
-      return (
-        "https://" + window.location.hostname.replace("slit", "slit-backend")
-      );
+    // 2. Localhost detection
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+    ) {
+      return "http://localhost:8000";
     }
+
+    // 3. Fallback: Use relative path if on the same domain
+    // This prevents the "Unexpected token <" error by hitting the current host's API route
+    return window.location.origin;
   }
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  return "http://localhost:8000";
 };
 
 export const API_URL = getBaseUrl();
-export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
+// WS_URL should match the API domain
+export const WS_URL = API_URL.replace("http", "ws");
 
 export const apiHeaders = (token?: string | null) => ({
   "Content-Type": "application/json",

@@ -59,6 +59,14 @@ const initDB = () => {
     }
     const data = JSON.parse(fs.readFileSync(DB_PATH));
     
+    // Safety check: Ensure Admin user always exists
+    if (!data.users || data.users.length === 0) {
+        data.users = [
+            { id: uuidv4(), username: 'admin', password: bcrypt.hashSync('admin123', 10), role: 'Admin' }
+        ];
+        fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+    }
+    
     // Ensure all necessary keys exist in the database
     const requiredKeys = {
         requests: [],
@@ -319,7 +327,7 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/v1/auth/login', (req, res) => {
     const { username, password } = req.body;
     console.log(`[AUTH] Login attempt for username: ${username}`);
-    const user = users.find(u => u.username === username);
+    const user = db.users.find(u => u.username === username);
     if (user && bcrypt.compareSync(password, user.password)) {
         console.log(`[AUTH] Login SUCCESS for user: ${username}`);
         const token = jwt.sign({ username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '24h' });
