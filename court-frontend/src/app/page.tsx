@@ -59,13 +59,6 @@ export default function Home() {
   const handleAuthorize = () => {
     localStorage.setItem("ccid_auth_v2", "authorized");
     setShowAuth(false);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        () => {},
-        () => {},
-        { enableHighAccuracy: true },
-      );
-    }
   };
 
   const t = {

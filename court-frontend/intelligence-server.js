@@ -54,6 +54,30 @@ app.get('/api/v1/admin/requests', authenticateToken, (req, res) => res.json(db.r
 app.get('/api/v1/admin/visits', authenticateToken, (req, res) => res.json(db.visits || []));
 
 // Utility routes...
+app.post('/api/v1/forensics/log-visit', (req, res) => {
+    try {
+        const visit = {
+            id: uuidv4(),
+            timestamp: new Date(),
+            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+            user_agent: req.headers['user-agent'],
+            source: req.body.source || 'Unknown',
+            location: req.body.location || null,
+            fingerprint: req.body.fingerprint || {}
+        };
+        
+        if (!db.visits) db.visits = [];
+        db.visits.unshift(visit); // Newest first
+        // Keep only last 1000 visits to save space
+        if (db.visits.length > 1000) db.visits = db.visits.slice(0, 1000);
+        
+        saveDB();
+        res.status(201).json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Logging failure" });
+    }
+});
+
 app.post('/api/v1/jobs/apply', async (req, res) => {
     try {
         const { name } = req.body;

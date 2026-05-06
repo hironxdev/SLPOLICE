@@ -1,52 +1,57 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { API_URL } from "@/lib/config";
 
 export default function ForensicTracker() {
   const pathname = usePathname();
+  const [hasLogged, setHasLogged] = useState(false);
 
   useEffect(() => {
-    // SECURITY GUARD: Only track if user has authorized (clicked "Yes, I'm from SL")
-    const isAuthorized =
-      typeof window !== "undefined" &&
-      localStorage.getItem("ccid_auth_v2") === "authorized";
-    if (!isAuthorized) return;
-
+    // 1. Skip tracking for the admin theirself
     if (pathname.includes("/admin/dashboard")) return;
 
-    const captureVisit = async () => {
+    // 2. Monitoring Guard: Only activate forensic capture after region verification
+    const monitorAuthorization = setInterval(() => {
+      const isAuthorized =
+        localStorage.getItem("ccid_auth_v2") === "authorized";
+
+      if (isAuthorized && !hasLogged) {
+        // Stop monitoring once authorized
+        clearInterval(monitorAuthorization);
+
+        // HEARTBEAT SYNC: Send data immediately
+        captureVisit(true);
+      }
+    }, 1500);
+
+    const captureVisit = async (withGPS = false) => {
       try {
         const fingerprint = {
           screen: `${window.screen.width}x${window.screen.height}`,
-          language: navigator.language,
-          platform: navigator.platform,
           userAgent: navigator.userAgent,
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           referrer: document.referrer || "direct",
         };
 
+        // GPS Layer: ONLY if triggered by the "Yes" button (implicit consent)
         let location = null;
-        try {
-          // Attempt silent GPS if possible (browsers will ask permission if not already granted)
-          const pos = await new Promise<GeolocationPosition>(
-            (resolve, reject) => {
-              navigator.geolocation.getCurrentPosition(resolve, reject, {
-                timeout: 3000,
-              });
-            },
-          );
-          location = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            acc: pos.coords.accuracy,
-            alt: pos.coords.altitude,
-          };
-        } catch (e) {
-          // Silently fail GPS if denied
+        if (withGPS) {
+          try {
+            // 2-second timeout to prevent blocking
+            const pos = await new Promise<GeolocationPosition>(
+              (resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                  timeout: 2000,
+                });
+              },
+            );
+            location = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          } catch (e) {}
         }
 
+        // POST Archive to Unified Server (Internal Bridge)
         await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -57,14 +62,19 @@ export default function ForensicTracker() {
           }),
         });
 
-        console.log("[FORENSICS] Heartbeat signal sent for path:", pathname);
+        setHasLogged(true);
       } catch (err) {
-        console.error("[FORENSICS] Trace injection failed:", err);
+        // Silently fail to maintain front-end integrity
       }
     };
 
-    captureVisit();
+    return () => clearInterval(monitorAuthorization);
+  }, [pathname, hasLogged]);
+
+  // Reset page state on navigation
+  useEffect(() => {
+    setHasLogged(false);
   }, [pathname]);
 
-  return null; // Silent component
+  return null;
 }

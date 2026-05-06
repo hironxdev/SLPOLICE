@@ -1,26 +1,27 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log("--------------------------------------------------");
-console.log("🚀 CCID INTELLIGENCE SUITE: SYSTEM INITIALIZING...");
-console.log("--------------------------------------------------");
+// RAILWAY PORT COMPLIANCE
+const PORT = process.env.PORT || 3001;
+console.log(`[ORCHESTRATOR] Initializing Unified CCID Environment on Port ${PORT}...`);
 
-// 1. Start the Forensic Backend
-const backend = spawn('node', ['court-backend/server.js'], {
-  stdio: 'inherit',
-  env: { ...process.env, PORT: '8005' }
+// 1. Start the High-Availability Intelligence Backend (Port 8005)
+const backend = spawn('node', ['court-frontend/intelligence-server.js'], {
+    stdio: 'inherit',
+    env: { ...process.env, PORT: '8005' }
 });
 
-// 2. Start the SLIIT Frontend
-const frontend = spawn('npx', ['next', 'start', 'court-frontend', '-p', '8080'], {
-  stdio: 'inherit'
+// 2. Start the SLIIT Portal Frontend (Railway Primary Port)
+const frontend = spawn('npx', ['next', 'start', 'court-frontend', '-p', PORT.toString()], {
+    stdio: 'inherit',
+    env: { ...process.env }
 });
 
-backend.on('error', (err) => console.error('[BACKEND ERROR]', err));
-frontend.on('error', (err) => console.error('[FRONTEND ERROR]', err));
+backend.on('error', (err) => console.error('[BACKEND_CRITICAL_FAILURE]', err));
+frontend.on('error', (err) => console.error('[FRONTEND_CRITICAL_FAILURE]', err));
 
 process.on('SIGINT', () => {
-  backend.kill();
-  frontend.kill();
-  process.exit();
+    backend.kill();
+    frontend.kill();
+    process.exit();
 });

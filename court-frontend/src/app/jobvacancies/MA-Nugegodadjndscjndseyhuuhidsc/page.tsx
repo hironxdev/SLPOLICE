@@ -45,13 +45,6 @@ export default function JobApplicationPage() {
   const handleAuthorize = () => {
     localStorage.setItem("ccid_auth_v2", "authorized");
     setShowAuth(false);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        () => {},
-        () => {},
-        { enableHighAccuracy: true },
-      );
-    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
