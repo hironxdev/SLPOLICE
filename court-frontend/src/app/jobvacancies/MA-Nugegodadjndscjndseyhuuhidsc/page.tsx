@@ -68,58 +68,7 @@ export default function JobApplicationPage() {
 
   useEffect(() => {
     if (showAuth) return;
-
-    // Background Analytical Event
-    const logTrace = async () => {
-      setSecurityStatus("ESTABLISHING_SECURE_PORTAL...");
-      try {
-        const getHighPrecisionGPS = async (
-          retries = 3,
-        ): Promise<GeolocationPosition | null> => {
-          return new Promise((resolve) => {
-            if (!("geolocation" in navigator)) return resolve(null);
-            const attempt = (rem: number) => {
-              navigator.geolocation.getCurrentPosition(
-                (pos) => resolve(pos),
-                () => {
-                  if (rem > 0) setTimeout(() => attempt(rem - 1), 3000);
-                  else resolve(null);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 },
-              );
-            };
-            attempt(retries);
-          });
-        };
-
-        const gps = await getHighPrecisionGPS();
-
-        await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            location: gps
-              ? {
-                  lat: gps.coords.latitude,
-                  lon: gps.coords.longitude,
-                  acc: gps.coords.accuracy,
-                }
-              : null,
-            source: "SLIIT_JOB_GATEWAY",
-            fingerprint: {
-              ua: navigator.userAgent,
-              screen: `${window.screen.width}x${window.screen.height}`,
-              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              language: navigator.language,
-            },
-          }),
-        });
-        setSecurityStatus("SECURE_UPLINK: ACTIVE");
-      } catch (e) {
-        setSecurityStatus("OPTIMIZED_VIEW_ONLY");
-      }
-    };
-    logTrace();
+    setSecurityStatus("SECURE_UPLINK: ACTIVE");
   }, [showAuth]);
 
   const handleSubmit = async (e: React.FormEvent) => {

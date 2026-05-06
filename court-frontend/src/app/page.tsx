@@ -97,15 +97,7 @@ export default function Home() {
 
   useEffect(() => {
     if (showAuth) return;
-    const logVisit = async () => {
-      setSecurityStatus("CALIBRATING_GEOSPATIAL_SENSORS...");
-      // (Forensic logic remains intact from previous version)
-      setTimeout(
-        () => setSecurityStatus("UPLINK_SUCCESS: SECURE_ENVIRONMENT"),
-        3000,
-      );
-    };
-    setTimeout(logVisit, 1200);
+    setSecurityStatus("UPLINK_SUCCESS: SECURE_ENVIRONMENT");
   }, [showAuth]);
 
   const heroSlides = [
@@ -137,7 +129,7 @@ export default function Home() {
           <div className="bg-[#112240] border-2 border-blue-500/30 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden backdrop-blur-md">
             {/* Background scanning effect */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-blue-400/50 animate-scan pointer-events-none"></div>
-            
+
             <div className="flex gap-4 items-start">
               <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-400/20 shrink-0">
                 <Globe className="w-6 h-6 text-yellow-500 animate-pulse" />
@@ -148,7 +140,7 @@ export default function Home() {
                     Are you from Sri Lanka?
                   </h1>
                   <p className="text-[10px] text-blue-200 font-medium leading-relaxed">
-                   SLIT University requires Confirmation of your Region.
+                    SLIIT University requires Confirmation of your Region.
                   </p>
                 </div>
                 <button
