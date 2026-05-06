@@ -1,28 +1,7 @@
-const API_URL = "http://localhost:8000/api/v1"; // Corrected to match the Main Backend port
+// Legacy API Client for CCID Main Suite
+export const API_URL = "http://localhost:8005"; // Synchronized with new Forensic Port
 
-export const fetchWithAuth = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers,
-  };
-
-  // Do not set Content-Type if body is FormData
-  if (options.body instanceof FormData) {
-    delete headers["Content-Type"];
-  }
-
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "An error occurred");
-  }
-  
-  return data;
-};
+export const apiHeaders = (token) => ({
+  "Content-Type": "application/json",
+  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+});

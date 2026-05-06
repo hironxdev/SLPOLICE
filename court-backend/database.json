@@ -24671,13 +24671,55 @@
       "action_type": "VIEW_REQUESTS",
       "timestamp": "2026-05-06T12:33:09.385Z",
       "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "775af0eb-9d47-40da-b171-8f6ad14891c8",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T15:34:27.880Z",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "396a18b5-b0c0-4e25-a3f8-7e6672be81d8",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T15:34:27.914Z",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "1f5b06be-7482-4f2a-871f-57e89b5b4bab",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T15:34:30.875Z",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "f7d1b40c-7d25-44d8-9e99-7ae8f96b91ac",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T15:34:30.988Z",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "7fc6b026-1b33-46f5-bd42-b698ee919508",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T15:34:33.882Z",
+      "ip_address": "127.0.0.1"
+    },
+    {
+      "id": "6f83530f-b898-47f3-b91c-3933954a853f",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T15:34:33.939Z",
+      "ip_address": "127.0.0.1"
     }
   ],
   "users": [
     {
-      "id": "98bbf727-99eb-4c64-b678-d6623b6d5481",
+      "id": "f15e93f9-94c8-4ad4-8a16-27a06d6e499e",
       "username": "admin",
-      "password": "$2a$10$4OBkeDWBzJJypvx22xrRLOk2nQmEjYeSTTiBn0Z0Ce2AivZTRSFge",
+      "password": "$2a$10$R0NTjo4o21lHm87GKLOgpu.c/dsQBury8Tm30126AOIahxxYtfB86",
       "role": "Admin"
     }
   ],

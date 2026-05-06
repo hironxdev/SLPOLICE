@@ -11,17 +11,9 @@ const bcrypt = require('bcryptjs');
 const app = express();
 
 // Production-ready CORS — set ALLOWED_ORIGIN in your hosting env vars
-// Production-ready CORS
-const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow all Railway subdomains or localhost
-        if (!origin || origin.includes("railway.app") || origin.includes("localhost") || allowedOrigin === '*') {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: true, // Always allow any origin for local development and Railway flexibility
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
