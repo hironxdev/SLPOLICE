@@ -2474,6 +2474,20 @@
       "action_type": "VIEW_VISITS",
       "timestamp": "2026-05-06T06:33:02.174Z",
       "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "63849717-adee-4aee-afed-db55f10ee9ee",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T08:10:01.261Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "4909c2e0-553c-4220-ac67-23611b08fcf6",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T08:10:25.171Z",
+      "ip_address": "::ffff:127.0.0.1"
     }
   ],
   "users": [
@@ -7613,7 +7627,16 @@
       },
       "hardware_fingerprint": {},
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:26:17.626Z"
+      "timestamp": "2026-05-06T06:26:17.626Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "5351337b-719c-4614-b961-767aea86eca3",
@@ -7636,7 +7659,16 @@
       },
       "hardware_fingerprint": {},
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:26:17.662Z"
+      "timestamp": "2026-05-06T06:26:17.662Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "fc4bd19e-0627-442c-9676-610ee38619de",
@@ -7675,7 +7707,16 @@
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0"
       },
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:26:17.912Z"
+      "timestamp": "2026-05-06T06:26:17.912Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "09b49cc7-9e2d-4afd-bd50-9d0af2c42778",
@@ -7698,7 +7739,16 @@
       },
       "hardware_fingerprint": {},
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:27:40.678Z"
+      "timestamp": "2026-05-06T06:27:40.678Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "33eecba6-33bc-4ce8-a9e0-df42ecee695d",
@@ -7737,7 +7787,16 @@
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0"
       },
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:27:41.547Z"
+      "timestamp": "2026-05-06T06:27:41.547Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "1e72fbcf-f135-4e84-85bd-5699bca19d0d",
@@ -7760,7 +7819,16 @@
       },
       "hardware_fingerprint": {},
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:27:42.754Z"
+      "timestamp": "2026-05-06T06:27:42.754Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "b9025c6e-55eb-4df4-9481-18bd2387e932",
@@ -7799,7 +7867,16 @@
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0"
       },
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:27:48.447Z"
+      "timestamp": "2026-05-06T06:27:48.447Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     },
     {
       "id": "283e6446-2166-4ba9-a60d-09c3a046e6be",
@@ -7838,7 +7915,16 @@
         "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0"
       },
       "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-      "timestamp": "2026-05-06T06:27:48.645Z"
+      "timestamp": "2026-05-06T06:27:48.645Z",
+      "forensics": {
+        "ip": "112.134.0.0",
+        "city_name": "Colombo",
+        "region_name": "Western Province",
+        "country_name": "Sri Lanka",
+        "isp": "Sri Lanka Telecom Internet",
+        "latitude": 6.93248,
+        "longitude": 79.84759
+      }
     }
   ],
   "evidence": [
