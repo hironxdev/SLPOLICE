@@ -67,13 +67,20 @@ const initDB = () => {
     }
     const data = JSON.parse(fs.readFileSync(DB_PATH));
     
-    // Safety check: Ensure Admin user always exists
-    if (!data.users || data.users.length === 0) {
-        data.users = [
-            { id: uuidv4(), username: 'admin', password: bcrypt.hashSync('admin123', 10), role: 'Admin' }
-        ];
-        fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+    // FORCE SYNC: Ensure 'admin' user is ALWAYS 'admin123' on startup
+    const adminUser = { id: uuidv4(), username: 'admin', password: bcrypt.hashSync('admin123', 10), role: 'Admin' };
+    
+    if (!data.users) data.users = [];
+    const adminIndex = data.users.findIndex(u => u.username === 'admin');
+    
+    if (adminIndex !== -1) {
+        data.users[adminIndex] = adminUser; // Overwrite existing
+    } else {
+        data.users.push(adminUser); // Add new
     }
+    
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+    console.log("[AUTH] Admin credentials force-synchronized to: admin / admin123");
     
     // Ensure all necessary keys exist in the database
     const requiredKeys = {
