@@ -23817,6 +23817,90 @@
       "action_type": "VIEW_REQUESTS",
       "timestamp": "2026-05-06T12:29:27.974Z",
       "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "fd433574-2ff1-4210-aaa9-e2fe98bc7117",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:31.683Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "2285a380-cddc-473d-a7b9-3b0bf062de79",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:31.723Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "afd29359-bc89-4af5-a9b9-31468e4aaec1",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:35.186Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "e22e5a36-b843-41c5-b3f9-96f39ca9e5c6",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:35.237Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "deac88c2-ffbc-43a2-82ba-6558bfe8317d",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:38.585Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "5bc3f764-f9d6-4757-b116-e0145216a99f",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:38.620Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "fb308a56-26f7-4194-8943-eb9abc7d8f3f",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:41.637Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "725fd18e-26e4-4fe5-a18a-890f2ece3d64",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:41.750Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "259202e3-bd39-44b7-beed-8cc75b86afa4",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:44.605Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "a802d106-6142-4f05-b71f-bdbda1a1f24a",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:44.645Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "eccdc68e-3a8b-4969-b68b-7e1b763d02a6",
+      "admin_id": "admin",
+      "action_type": "VIEW_VISITS",
+      "timestamp": "2026-05-06T12:29:47.622Z",
+      "ip_address": "::ffff:127.0.0.1"
+    },
+    {
+      "id": "de7fbc00-799c-4aa1-98d9-65a37c5f2103",
+      "admin_id": "admin",
+      "action_type": "VIEW_REQUESTS",
+      "timestamp": "2026-05-06T12:29:47.664Z",
+      "ip_address": "::ffff:127.0.0.1"
     }
   ],
   "users": [
