@@ -36,6 +36,9 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 8000;
 const SECRET_KEY = process.env.JWT_SECRET || "ccid-secure-secret-key-CHANGE-IN-PRODUCTION";
+
+app.get('/api/v1/ping', (req, res) => res.json({ status: "online" }));
+
 const DB_PATH = path.join(__dirname, 'database.json');
 
 // Initialize Simple File DB

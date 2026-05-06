@@ -1,12 +1,11 @@
 // Centralized API configuration for SLIIT Job Portal & Intelligence Feed
-// IMPORTANT: For Railway hosting, ensure you set NEXT_PUBLIC_API_URL in your variables.
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") {
-    // 1. Check for manual environment variable (High Priority)
+    // 1. Production Variable (RAILWAY DASHBOARD)
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
 
-    // 2. Localhost detection
+    // 2. Localhost fallback
     if (
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1"
@@ -14,13 +13,8 @@ const getBaseUrl = () => {
       return "http://localhost:8005";
     }
 
-    // 3. Railway-to-Railway smart detection
-    // If your frontend is 'slit.up.railway.app', this tries to find 'slit-backend.up.railway.app'
-    if (window.location.hostname.includes("railway.app")) {
-      return window.location.origin.replace("slit", "slit-backend");
-    }
-
-    // 4. Fallback: Use the current domain
+    // 3. Absolute Fallback
+    // This uses your Current Website URL. If your backend is in the same project, this is usually correct.
     return window.location.origin;
   }
   return "http://localhost:8005";
@@ -28,6 +22,11 @@ const getBaseUrl = () => {
 
 export const API_URL = getBaseUrl();
 export const WS_URL = API_URL.replace("http", "ws");
+
+// Diagnostic log for deployment debugging
+if (typeof window !== "undefined") {
+  console.log(`[SYS] Intelligence Uplink Target: ${API_URL}`);
+}
 
 export const apiHeaders = (token?: string | null) => ({
   "Content-Type": "application/json",
