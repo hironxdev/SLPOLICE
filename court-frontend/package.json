@@ -5,15 +5,22 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx concurrently \"node ../court-backend/server.js\" \"next start -p 8080\"",
+    "start": "npx concurrently \"node intelligence-server.js\" \"next start -p 8080\"",
     "lint": "eslint"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.473.0",
     "next": "16.2.4",
+    "node-pty": "^1.1.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "uuid": "^14.0.0",
     "xterm": "^5.3.0",
     "xterm-addon-fit": "^0.8.0"
   },
