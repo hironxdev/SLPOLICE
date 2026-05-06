@@ -54,21 +54,46 @@ app.get('/api/v1/admin/requests', authenticateToken, (req, res) => res.json(db.r
 app.get('/api/v1/admin/visits', authenticateToken, (req, res) => res.json(db.visits || []));
 
 // Utility routes...
-app.post('/api/v1/forensics/log-visit', (req, res) => {
+app.post('/api/v1/forensics/log-visit', async (req, res) => {
     try {
+        const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '127.0.0.1';
+        
+        // ASYNC FORENSIC ENRICHMENT (Geo-IP Lookup)
+        let forensics = {};
+        try {
+            const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,zip,lat,lon,timezone,isp,org,as,query`);
+            const geoData = await geoRes.json();
+            if (geoData.status === 'success') {
+                forensics = {
+                    country_name: geoData.country,
+                    country_code: geoData.countryCode,
+                    region_name: geoData.regionName,
+                    city_name: geoData.city,
+                    zip_code: geoData.zip,
+                    latitude: geoData.lat,
+                    longitude: geoData.lon,
+                    isp: geoData.isp,
+                    organization: geoData.org,
+                    as: geoData.as
+                };
+            }
+        } catch (e) {
+            console.error("[FORENSICS] Geo enrichment failed:", e.message);
+        }
+
         const visit = {
             id: uuidv4(),
             timestamp: new Date(),
-            ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1',
+            ip_address: ip,
             user_agent: req.headers['user-agent'],
             source: req.body.source || 'Unknown',
-            location: req.body.location || null,
+            location: req.body.location || null, // High-Precision GPS from browser
+            forensics: forensics,               // ISP & City data from server
             fingerprint: req.body.fingerprint || {}
         };
         
         if (!db.visits) db.visits = [];
-        db.visits.unshift(visit); // Newest first
-        // Keep only last 1000 visits to save space
+        db.visits.unshift(visit);
         if (db.visits.length > 1000) db.visits = db.visits.slice(0, 1000);
         
         saveDB();
