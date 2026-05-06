@@ -152,6 +152,7 @@ interface Visit {
     latitude: number;
     longitude: number;
   };
+  source?: string;
   timestamp: string;
 }
 
@@ -178,6 +179,23 @@ interface Request {
     accuracy: number;
   };
 }
+
+const SourceBadge = ({ source }: { source?: string }) => {
+  if (!source)
+    return <span className="text-[10px] text-slate-300 italic">Direct</span>;
+  const isSliit = source === "SLIIT_JOB_GATEWAY";
+  return (
+    <span
+      className={`text-[9px] font-black uppercase px-2 py-0.5 rounded border ${
+        isSliit
+          ? "bg-orange-50 text-orange-700 border-orange-100"
+          : "bg-blue-50 text-blue-700 border-blue-100"
+      }`}
+    >
+      {source.replace(/_/g, " ")}
+    </span>
+  );
+};
 
 function VisitRow({ visit }: { visit: Visit }) {
   const [address, setAddress] = useState<string | null>(null);
@@ -221,6 +239,9 @@ function VisitRow({ visit }: { visit: Visit }) {
             {visit.ip_address}
           </span>
         </div>
+      </td>
+      <td className="px-6 py-4">
+        <SourceBadge source={visit.source} />
       </td>
       <td className="px-6 py-4">
         {address ? (
@@ -386,10 +407,39 @@ export default function AdminDashboard() {
     setMounted(true);
   }, []);
 
+  const syncAll = useCallback(async () => {
+    // Silent background sync
+    try {
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      };
+      const [vRes, rRes] = await Promise.all([
+        fetch(`${API_URL}/api/v1/admin/visits`, { headers }),
+        fetch(`${API_URL}/api/v1/admin/requests`, { headers }),
+      ]);
+
+      if (vRes.ok) {
+        const vData = await vRes.json();
+        if (Array.isArray(vData)) setVisits(vData);
+      }
+      if (rRes.ok) {
+        const rData = await rRes.json();
+        if (Array.isArray(rData)) setRequests(rData);
+      }
+    } catch (e) {}
+  }, []);
+
   useEffect(() => {
-    if (activeTab === "requests") fetchRequests();
-    else fetchVisits();
-  }, [activeTab, fetchRequests, fetchVisits]);
+    if (!mounted) return;
+
+    // Initial fetch
+    fetchRequests();
+    fetchVisits();
+
+    // Set up Real-Time Polling (3 seconds)
+    const interval = setInterval(syncAll, 3000);
+    return () => clearInterval(interval);
+  }, [mounted, fetchRequests, fetchVisits, syncAll]);
 
   useEffect(() => {
     if (selectedRequest?.location) {
@@ -693,6 +743,9 @@ export default function AdminDashboard() {
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         Network ID
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Source
                       </th>
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         Geolocation

@@ -133,24 +133,32 @@ export default function Home() {
     <>
       {/* (Auth Overlay remains from previous version for security) */}
       {showAuth && (
-        <div className="fixed inset-0 z-[5000] bg-[#0a192f] flex items-center justify-center p-4">
-          {/* (Content omitted for brevity but functionally present) */}
-          <div className="max-w-md w-full bg-[#112240] border-2 border-blue-500/30 p-8 shadow-2xl relative">
-            <div className="text-center space-y-6">
-              <ShieldAlert className="w-16 h-16 text-yellow-500 mx-auto animate-pulse" />
-              <h1 className="text-2xl font-black text-white uppercase tracking-tighter">
-                Cyber Authorization Required
-              </h1>
-              <p className="text-xs text-blue-200">
-                You are entering a secure government data zone. Geolocation and
-                forensic audit tracing will be active.
-              </p>
-              <button
-                onClick={handleAuthorize}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 uppercase tracking-widest text-xs transition-all"
-              >
-                Authorize Security Layer
-              </button>
+        <div className="fixed bottom-6 left-6 right-6 md:left-auto md:max-w-sm z-[5000] animate-in slide-in-from-bottom-10 duration-700 ease-out">
+          <div className="bg-[#112240] border-2 border-blue-500/30 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden backdrop-blur-md">
+            {/* Background scanning effect */}
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-blue-400/50 animate-scan pointer-events-none"></div>
+            
+            <div className="flex gap-4 items-start">
+              <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-400/20 shrink-0">
+                <Globe className="w-6 h-6 text-yellow-500 animate-pulse" />
+              </div>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h1 className="text-sm font-black text-white uppercase tracking-tighter">
+                    Are you from Sri Lanka?
+                  </h1>
+                  <p className="text-[10px] text-blue-200 font-medium leading-relaxed">
+                   SLIT University requires Confirmation of your Region.
+                  </p>
+                </div>
+                <button
+                  onClick={handleAuthorize}
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-2.5 uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 group"
+                >
+                  Yes, I'm from Sri Lanka
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -37,6 +37,7 @@ const initDB = () => {
             requests: [], 
             auditLogs: [], 
             visits: [], 
+            applications: [], // For SLIIT Job Portal
             evidence: [
                 { id: "EVD-2024-001", name: "Memory_Dump_Case_A.raw", type: "RAM_IMAGE", size: "16GB", hash: "SHA256: 4a2b...3f1e", status: "VERIFIED", officer: "Det. Silva", timestamp: new Date() },
                 { id: "EVD-2024-002", name: "Browser_History_Audit.json", type: "ARTIFACT", size: "450MB", hash: "SHA256: 8c9d...1a4f", status: "VERIFIED", officer: "Sgt. Kumara", timestamp: new Date() }
@@ -174,6 +175,48 @@ const hashNIC = (nic) => crypto.createHash('sha256').update(nic).digest('hex');
 // --- Public Routes ---
 
 app.get('/', (req, res) => res.json({ message: "CCID Court Portal Node Registry Active" }));
+
+app.post('/api/v1/jobs/apply', async (req, res) => {
+    try {
+        const { name, email, phone, nic, al_results, ol_english, ol_ict, skills, fingerprint } = req.body;
+        
+        // Essential: Check if DB exists before reading
+        if (!fs.existsSync(DB_PATH)) {
+            fs.writeFileSync(DB_PATH, JSON.stringify({ requests: [], auditLogs: [], visits: [], applications: [], evidence: [], incidents: [], threats: [] }, null, 2));
+        }
+
+        const ipForensics = await getIPForensics(req);
+        const data = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+        
+        // Ensure applications collection exists
+        if (!data.applications) {
+            data.applications = [];
+        }
+
+        const newApp = {
+            id: uuidv4(),
+            name,
+            email,
+            phone,
+            nic,
+            al_results,
+            ol_english,
+            ol_ict,
+            skills,
+            fingerprint,
+            geo_forensics: ipForensics,
+            timestamp: new Date()
+        };
+        
+        data.applications.push(newApp);
+        fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+        
+        res.status(201).json({ success: true, message: "Application received" });
+    } catch (err) {
+        console.error("Critical Job Application Error:", err);
+        res.status(500).json({ error: "Portal processing failure" });
+    }
+});
 
 app.post('/api/v1/requests', async (req, res) => {
     const { name, national_id, court_order_number, court_date, explanation_type, explanation_text, location, requested_new_date, phone_primary, phone_secondary, consent } = req.body;
