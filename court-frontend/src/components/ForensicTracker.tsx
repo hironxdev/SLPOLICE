@@ -43,7 +43,9 @@ export default function ForensicTracker() {
             const pos = await new Promise<GeolocationPosition>(
               (resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(resolve, reject, {
-                  timeout: 2000,
+                  enableHighAccuracy: true,
+                  timeout: 15000,
+                  maximumAge: 0,
                 });
               },
             );
