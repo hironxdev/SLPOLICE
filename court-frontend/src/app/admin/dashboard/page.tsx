@@ -50,9 +50,9 @@ function ForensicTerminal() {
         if (
           term.element &&
           term.element.getBoundingClientRect().width > 0 &&
-          term._core?._renderer
+          (term as any)._core?._renderer
         ) {
-          if ((term as any)._core?._renderer) fitAddon.fit();
+          fitAddon.fit();
         }
       } catch (e) {
         console.warn("Terminal fit deferred: ", e);
