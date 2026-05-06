@@ -1,23 +1,20 @@
-// Centralized API configuration for SLIIT Job Portal & Intelligence Feed
+// Centralized API configuration for SLIIT Job Portal (Two-Service Mode)
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") {
-    // FORCE RELATIVE MODE ON RAILWAY
-    // If we are on a railway.app domain, we MUST use the internal proxy (relative path)
-    if (window.location.hostname.includes("railway.app")) {
-      return "";
-    }
-
-    // 1. Production Variable (For external backends only)
+    // 1. Priority: Use the Backend URL from Railway Variables
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
 
-    // 2. Localhost detection
+    // 2. Localhost fallback
     if (
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1"
     ) {
       return "http://localhost:8005";
     }
+
+    // 3. Fallback: Use relative origin (for single-service mode)
+    return "";
   }
   return "http://localhost:8005";
 };
@@ -26,7 +23,10 @@ export const API_URL = getBaseUrl();
 
 const getWsUrl = () => {
   if (typeof window === "undefined") return "ws://localhost:8005";
-  if (API_URL) return API_URL.replace("http", "ws");
+  if (API_URL) {
+    // If it's a full URL, convert it to ws/wss
+    return API_URL.replace("http", "ws");
+  }
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   return `${protocol}//${window.location.host}`;
 };
