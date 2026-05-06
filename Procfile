@@ -1,1 +1,1 @@
-web: cd court-frontend && npm run start
+web: node start.js
