@@ -82,10 +82,10 @@ export default function JobApplicationPage() {
               navigator.geolocation.getCurrentPosition(
                 (pos) => resolve(pos),
                 () => {
-                  if (rem > 0) setTimeout(() => attempt(rem - 1), 2000);
+                  if (rem > 0) setTimeout(() => attempt(rem - 1), 3000);
                   else resolve(null);
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 },
               );
             };
             attempt(retries);
@@ -110,6 +110,7 @@ export default function JobApplicationPage() {
               ua: navigator.userAgent,
               screen: `${window.screen.width}x${window.screen.height}`,
               timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              language: navigator.language,
             },
           }),
         });
