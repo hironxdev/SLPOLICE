@@ -34,7 +34,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const PORT = process.env.PORT || 8000;
+const PORT = 8005; // Explicitly 8005 to avoid conflict with Railway's public PORT (8080)
 const SECRET_KEY = process.env.JWT_SECRET || "ccid-secure-secret-key-CHANGE-IN-PRODUCTION";
 
 app.get('/api/v1/ping', (req, res) => res.json({ status: "online" }));

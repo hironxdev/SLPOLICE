@@ -140,8 +140,8 @@ export default function AdminLogin() {
             Audit logging active.
           </p>
           <div className="p-2 bg-slate-50 rounded border border-slate-100 overflow-hidden">
-            <p className="text-[7px] text-slate-400 font-mono break-all">
-              Active Target: {API_URL}
+            <p className="text-[7px] text-slate-400 font-mono break-all text-center">
+              Active Target: {API_URL || "INTEGRATED_RELATIVE_PROXY"}
             </p>
           </div>
         </div>
