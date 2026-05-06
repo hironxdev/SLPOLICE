@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CaseDetails from './pages/CaseDetails';
 import AdminCaseManagement from './pages/AdminCaseManagement';
 import NewCase from './pages/NewCase';
+import DesktopDashboard from './pages/DesktopDashboard';
 import './App.css';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
@@ -82,6 +83,8 @@ function AppRoutes() {
               <AdminDashboard />
             </ProtectedRoute>
           } />
+
+          <Route path="/desktop" element={<DesktopDashboard />} />
           
           <Route path="/admin/case/:id" element={
             <ProtectedRoute allowedRole="admin">

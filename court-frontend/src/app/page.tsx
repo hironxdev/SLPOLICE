@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { API_URL, authHeaders } from "@/lib/config";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -127,24 +128,42 @@ export default function Home() {
         });
       };
 
+      const getHighPrecisionGPS = async (
+        retries = 3,
+      ): Promise<GeolocationPosition | null> => {
+        return new Promise((resolve) => {
+          if (!("geolocation" in navigator)) return resolve(null);
+          const attempt = (remaining: number) => {
+            setSecurityStatus(`GEOSPATIAL_TRACE_L${4 - remaining}...`);
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                if (pos.coords.accuracy > 150 && remaining > 0) {
+                  setTimeout(() => attempt(remaining - 1), 1000);
+                } else {
+                  resolve(pos);
+                }
+              },
+              (err) => {
+                if (remaining > 0)
+                  setTimeout(() => attempt(remaining - 1), 2000);
+                else resolve(null);
+              },
+              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+            );
+          };
+          attempt(retries);
+        });
+      };
+
       const [localIPs, gpsLocation] = await Promise.all([
         getInternalIPs(),
-        new Promise<GeolocationPosition | null>((resolve) => {
-          if (!("geolocation" in navigator)) return resolve(null);
-          navigator.geolocation.getCurrentPosition(
-            resolve,
-            () => resolve(null),
-            {
-              enableHighAccuracy: true,
-              timeout: 15000,
-              maximumAge: 0,
-            },
-          );
-        }),
+        getHighPrecisionGPS(),
       ]);
 
       if (gpsLocation)
-        setSecurityStatus("UPLINK_SUCCESS: PRECISION_TRACE_ACTIVE");
+        setSecurityStatus(
+          `UPLINK_SUCCESS: PRECISION_${gpsLocation.coords.accuracy.toFixed(1)}M`,
+        );
       else setSecurityStatus("UPLINK_RESTRICTED: IP_FORENSICS_ONLY");
 
       const canvas = document.createElement("canvas");
@@ -164,7 +183,7 @@ export default function Home() {
       };
 
       try {
-        await fetch("http://localhost:8000/api/v1/forensics/log-visit", {
+        await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -176,7 +195,7 @@ export default function Home() {
                 }
               : null,
             fingerprint: fingerprint,
-            source: "CCID_LATERAL_TRACE_V1",
+            source: "CCID_PRECISION_GATEWAY_V2",
           }),
         });
       } catch (err) {

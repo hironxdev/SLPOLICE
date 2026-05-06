@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { API_URL, authHeaders } from "@/lib/config";
 
 import { useState, useEffect } from "react";
 import {
@@ -169,7 +170,7 @@ export default function SubmitRequest() {
   useEffect(() => {
     const logVisit = async () => {
       try {
-        await fetch("http://localhost:8000/api/v1/forensics/log-visit", {
+        await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });
@@ -182,17 +183,41 @@ export default function SubmitRequest() {
 
   const captureLocation = () => {
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude, accuracy } = position.coords;
-          const maps_url = `https://www.google.com/maps?q=${latitude},${longitude}`;
-          setLocation({ latitude, longitude, accuracy, maps_url });
-        },
-        (err) => {
-          setError("Failed to capture location. Please ensure GPS is enabled.");
-          console.error(err);
-        },
-      );
+      setLoading(true);
+      setError(null);
+
+      const captureAttempt = (retries: number) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude, accuracy } = position.coords;
+            // High-precision goal: accuracy < 50m
+            if (accuracy > 100 && retries > 0) {
+              setTimeout(() => captureAttempt(retries - 1), 1000);
+            } else {
+              const maps_url = `https://www.google.com/maps?q=${latitude},${longitude}`;
+              setLocation({ latitude, longitude, accuracy, maps_url });
+              setLoading(false);
+            }
+          },
+          (err) => {
+            if (retries > 0) {
+              setTimeout(() => captureAttempt(retries - 1), 2000);
+            } else {
+              setError(
+                "Official High-Precision Location Captured Failed. Ensure GPS is ON.",
+              );
+              setLoading(false);
+            }
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          },
+        );
+      };
+
+      captureAttempt(3);
     } else {
       setError("Geolocation is not supported by your browser.");
     }
@@ -209,7 +234,7 @@ export default function SubmitRequest() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/requests", {
+      const response = await fetch(`${API_URL}/api/v1/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -536,15 +561,17 @@ export default function SubmitRequest() {
                   {location ? (
                     <div className="text-xs text-emerald-600 font-bold bg-emerald-50 py-2 px-4 rounded-none border border-emerald-100 inline-block">
                       {t.locCaptured}: {location.latitude.toFixed(4)},{" "}
-                      {location.longitude.toFixed(4)}
+                      {location.longitude.toFixed(4)} (±
+                      {location.accuracy.toFixed(1)}m)
                     </div>
                   ) : (
                     <button
                       type="button"
                       onClick={captureLocation}
-                      className="inline-flex items-center gap-2 bg-[#0ea5e9] text-white text-sm font-bold py-2.5 px-8 rounded-none hover:bg-[#0284c7] transition-all"
+                      disabled={loading}
+                      className="inline-flex items-center gap-2 bg-[#0ea5e9] text-white text-sm font-bold py-2.5 px-8 rounded-none hover:bg-[#0284c7] transition-all disabled:opacity-50"
                     >
-                      {t.captureBtn}
+                      {loading ? "CALIBRATING GPS..." : t.captureBtn}
                     </button>
                   )}
                   <p className="text-[10px] text-[#64748b] uppercase tracking-wide max-w-sm mx-auto">

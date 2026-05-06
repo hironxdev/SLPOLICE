@@ -1,4 +1,5 @@
-"use client";
+﻿"use client";
+import { API_URL, authHeaders } from "@/lib/config";
 
 import { useState } from "react";
 import { Lock, User, ShieldAlert } from "lucide-react";
@@ -16,7 +17,7 @@ export default function AdminLogin() {
 
     // Connect to Node Registry Backend
     try {
-      const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -37,48 +38,48 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-6 font-sans">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+      <div className="max-w-md w-full bg-white p-10 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50">
         <div className="text-center mb-10">
-          <div className="inline-flex p-4 bg-sky-500/10 rounded-full mb-4 border border-sky-500/20 shadow-2xl">
-            <ShieldAlert className="w-10 h-10 text-sky-400" />
+          <div className="inline-flex p-4 bg-blue-50 rounded-full mb-6 border border-blue-100 shadow-sm">
+            <ShieldAlert className="w-10 h-10 text-blue-700" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-widest uppercase">
-            CCID - ADMIN
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            CCID Admin Portal
           </h1>
-          <p className="text-sky-500/60 text-xs font-bold mt-2 uppercase tracking-tighter">
-            Authorized Personnel Only
+          <p className="text-slate-500 text-xs font-semibold mt-2 uppercase tracking-widest">
+            Official Access • Authorized Personnel Only
           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-4">
             <div className="relative group">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-sky-400 transition-colors" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-700 transition-colors" />
               <input
                 required
                 type="text"
-                placeholder="Username"
+                placeholder="Official Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-800 rounded-lg py-3 pl-12 pr-4 text-slate-200 outline-none focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-900 font-semibold outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400 shadow-inner"
               />
             </div>
             <div className="relative group">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-sky-400 transition-colors" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-700 transition-colors" />
               <input
                 required
                 type="password"
-                placeholder="Password"
+                placeholder="Access Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-800 rounded-lg py-3 pl-12 pr-4 text-slate-200 outline-none focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/5 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-4 pl-12 pr-4 text-slate-900 font-semibold outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/5 transition-all placeholder:text-slate-400 shadow-inner"
               />
             </div>
           </div>
 
           {error && (
-            <div className="text-rose-400 text-xs font-bold text-center uppercase tracking-wider">
+            <div className="text-rose-600 text-xs font-bold text-center bg-rose-50 p-3 rounded-lg border border-rose-100 uppercase tracking-wider animate-in fade-in slide-in-from-top-1">
               {error}
             </div>
           )}
@@ -86,15 +87,17 @@ export default function AdminLogin() {
           <button
             disabled={loading}
             type="submit"
-            className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-lg shadow-xl shadow-sky-900/20 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
+            className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-100 transition-all disabled:opacity-50 uppercase tracking-widest text-xs active:scale-[0.98]"
           >
-            {loading ? "Authenticating..." : "System Login"}
+            {loading ? "AUTHENTICATING..." : "Establish Secure Session"}
           </button>
         </form>
 
-        <p className="mt-8 text-center text-slate-600 text-[10px] uppercase font-bold tracking-widest">
-          Audit logging active. All access attempts recorded.
-        </p>
+        <div className="mt-10 pt-6 border-t border-slate-100 text-center">
+          <p className="text-slate-400 text-[10px] uppercase font-bold tracking-widest">
+            Audit logging active. All access attempts are recorded.
+          </p>
+        </div>
       </div>
     </div>
   );

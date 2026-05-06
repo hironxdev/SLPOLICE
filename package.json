@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "Root configuration to run CCID portal",
   "scripts": {
-    "install": "cd backend && npm install && cd ../frontend && npm install && cd ../court-frontend && npm install && cd ../court-backend && npm install",
-    "dev": "npx concurrently \"cd backend && node --watch server.js\" \"cd frontend && npm run dev\" \"cd court-frontend && npm run dev -- -p 3001\" \"cd court-backend && node --watch server.js\""
+    "install": "cd backend && npm install && cd ../frontend && npm install && cd ../court-frontend && npm install && cd ../court-backend && npm install && cd ../desktop && npm install",
+    "dev": "npx concurrently \"cd backend && node --watch server.js\" \"cd frontend && npm run dev\" \"cd court-frontend && npm run dev -- -p 3001\" \"cd court-backend && node --watch server.js\"",
+    "desktop-dev": "npx concurrently \"npm run dev\" \"cd desktop && npm start\"",
+    "desktop-build": "cd frontend && npm run build && cd ../desktop && npm run dist"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

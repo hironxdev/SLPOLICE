@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_URL, WS_URL } from "@/lib/config";
 import {
   ShieldCheck,
   Search,
@@ -10,7 +11,114 @@ import {
   LogOut,
   RefreshCcw,
   Trash2,
+  Terminal as TerminalIcon,
+  ShieldAlert,
+  Users,
 } from "lucide-react";
+import React from "react";
+import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
+import "xterm/css/xterm.css";
+import { io } from "socket.io-client";
+
+function ForensicTerminal() {
+  const terminalRef = React.useRef<HTMLDivElement>(null);
+  const xtermRef = React.useRef<Terminal | null>(null);
+
+  useEffect(() => {
+    if (!terminalRef.current) return;
+
+    const term = new Terminal({
+      theme: {
+        background: "#0f172a",
+        foreground: "#f8fafc",
+        cursor: "#fbbf24",
+        selectionBackground: "rgba(251, 191, 36, 0.3)",
+      },
+      fontFamily: '"Fira Code", monospace',
+      fontSize: 13,
+      cursorBlink: true,
+    });
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(terminalRef.current);
+
+    // Safely fit the terminal after a short delay to ensure DOM is ready and renderer is active
+    const timer = setTimeout(() => {
+      try {
+        if (
+          term.element &&
+          term.element.getBoundingClientRect().width > 0 &&
+          term._core?._renderer
+        ) {
+          if ((term as any)._core?._renderer) fitAddon.fit();
+        }
+      } catch (e) {
+        console.warn("Terminal fit deferred: ", e);
+      }
+    }, 500); // Increased delay for better stability in Turbopack environments
+
+    const socket = io(WS_URL);
+
+    socket.on("connect", () => {
+      term.writeln(
+        "\x1b[1;36m┌──(root㉿kali)-[PROVISIONING_SECURE_LINK]\x1b[0m",
+      );
+      term.writeln(
+        "\x1b[1;36m└─# \x1b[0mEstablishing CCID Digital Sovereignty Layer...",
+      );
+      term.writeln("");
+      term.writeln("\x1b[1;32m[SYSTEM] KALI ENVIRONMENT SYNCHRONIZED\x1b[0m");
+      term.writeln(
+        "\x1b[1;33mOPERATIONAL TOOLS: Python3, Go, C++, Rust, Node.js, Metasploit-v6\x1b[0m",
+      );
+      term.writeln(
+        "\x1b[1;34mAUTHORIZATION: UNRESTRICTED CORE-NODE ACCESS\x1b[0m",
+      );
+      term.writeln("");
+    });
+
+    term.onData((data) => socket.emit("input", data));
+    socket.on("output", (data) => term.write(data));
+
+    xtermRef.current = term;
+
+    const handleResize = () => {
+      try {
+        if ((term as any)._core?._renderer) fitAddon.fit();
+        socket.emit("resize", { cols: term.cols, rows: term.rows });
+      } catch (e) {}
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      socket.disconnect();
+      term.dispose();
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <div className="bg-[#0f172a] rounded-xl border border-slate-800 overflow-hidden p-2 shadow-2xl relative">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 animate-pulse"></div>
+      <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></div>
+          <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
+            Live Cyber Ops Terminal
+          </span>
+        </div>
+        <span className="text-[9px] text-slate-500 font-mono italic">
+          ROOTED ACCESS: HQ_POLICE_SRILANKA
+        </span>
+      </div>
+      <div ref={terminalRef} className="h-[600px]" />
+    </div>
+  );
+}
 
 interface Visit {
   id: string;
@@ -74,9 +182,13 @@ function VisitRow({ visit }: { visit: Visit }) {
 
   useEffect(() => {
     const lat =
-      visit.geo_forensics?.precision_gps?.lat || visit.location?.latitude;
+      visit.forensics?.latitude ||
+      visit.geo_forensics?.precision_gps?.lat ||
+      visit.location?.latitude;
     const lon =
-      visit.geo_forensics?.precision_gps?.lon || visit.location?.longitude;
+      visit.forensics?.longitude ||
+      visit.geo_forensics?.precision_gps?.lon ||
+      visit.location?.longitude;
 
     if (lat && lon) {
       fetch(
@@ -86,24 +198,24 @@ function VisitRow({ visit }: { visit: Visit }) {
         .then((data) => setAddress(data.display_name))
         .catch(() => {});
     }
-  }, [visit.location, visit.geo_forensics]);
+  }, [visit.location, visit.geo_forensics, visit.forensics]);
 
   return (
-    <tr className="hover:bg-slate-800/30 transition-colors group">
+    <tr className="hover:bg-slate-50 transition-colors group border-b border-slate-100 last:border-0">
       <td className="px-6 py-4">
         <div className="flex flex-col">
-          <span className="text-xs font-black text-slate-300">
+          <span className="text-xs font-bold text-slate-700">
             {new Date(visit.timestamp).toLocaleTimeString()}
           </span>
-          <span className="text-[9px] text-slate-600 font-bold uppercase">
+          <span className="text-[10px] text-slate-400 font-medium uppercase">
             {new Date(visit.timestamp).toLocaleDateString()}
           </span>
         </div>
       </td>
       <td className="px-6 py-4">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-3 h-3 text-rose-500" />
-          <span className="text-xs font-mono font-bold text-white tracking-tight">
+          <ShieldCheck className="w-3 h-3 text-blue-600" />
+          <span className="text-xs font-mono font-semibold text-slate-600">
             {visit.ip_address}
           </span>
         </div>
@@ -112,31 +224,31 @@ function VisitRow({ visit }: { visit: Visit }) {
         {address ? (
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
-              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_#10b981]"></span>
+              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
                 GPS Verified
               </span>
             </div>
-            <p className="text-[10px] font-bold text-white leading-tight">
+            <p className="text-[11px] font-medium text-slate-700 leading-tight">
               {address}
             </p>
           </div>
         ) : visit.geo_forensics?.precision_gps || visit.location ? (
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
-              <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_4px_#10b981]"></span>
+              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
                 Precision Uplink
               </span>
             </div>
-            <p className="text-[10px] font-bold text-slate-400 leading-tight italic">
+            <p className="text-[11px] font-medium text-slate-500 leading-tight italic">
               {visit.geo_forensics?.precision_gps?.lat?.toFixed(5)},{" "}
               {visit.geo_forensics?.precision_gps?.lon?.toFixed(5)}
             </p>
           </div>
         ) : visit.geo_forensics?.ip_based || visit.forensics ? (
           <div className="space-y-0.5">
-            <p className="text-xs font-bold text-slate-200">
+            <p className="text-xs font-semibold text-slate-700">
               {visit.geo_forensics?.ip_based?.city ||
                 visit.forensics?.city_name ||
                 "Unknown City"}
@@ -145,28 +257,28 @@ function VisitRow({ visit }: { visit: Visit }) {
                 visit.forensics?.region_name ||
                 ""}
             </p>
-            <p className="text-[9px] font-black text-slate-500 uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
               {visit.geo_forensics?.ip_based?.country ||
                 visit.forensics?.country_name}
             </p>
           </div>
         ) : (
-          <span className="text-[10px] text-slate-600 italic animate-pulse">
-            Geo-Trace Failed
+          <span className="text-[11px] text-slate-400 italic">
+            Location Trace Pending
           </span>
         )}
       </td>
       <td className="px-6 py-4">
-        <span className="text-[10px] font-bold text-sky-400 bg-sky-400/5 px-2 py-1 rounded border border-sky-400/10">
+        <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
           {visit.external_identity?.isp ||
             visit.forensics?.isp ||
             visit.forensics?.as ||
-            "Internal / Unknown"}
+            "Internal Network"}
         </span>
       </td>
       <td className="px-6 py-4">
         <p
-          className="text-[9px] text-slate-500 font-medium truncate max-w-[150px]"
+          className="text-[10px] text-slate-400 font-medium truncate max-w-[150px]"
           title={visit.user_agent}
         >
           {visit.user_agent}
@@ -177,7 +289,7 @@ function VisitRow({ visit }: { visit: Visit }) {
           <a
             href={`https://www.google.com/maps?q=${visit.geo_forensics.precision_gps.lat},${visit.geo_forensics.precision_gps.lon}`}
             target="_blank"
-            className="inline-flex p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-lg transition-all border border-emerald-500/20"
+            className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
           >
             <MapPin className="w-4 h-4" />
@@ -186,7 +298,7 @@ function VisitRow({ visit }: { visit: Visit }) {
           <a
             href={`https://www.google.com/maps?q=${visit.location.latitude},${visit.location.longitude}`}
             target="_blank"
-            className="inline-flex p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 rounded-lg transition-all border border-emerald-500/20"
+            className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
           >
             <MapPin className="w-4 h-4" />
@@ -196,14 +308,14 @@ function VisitRow({ visit }: { visit: Visit }) {
           <a
             href={`https://www.google.com/maps?q=${visit.geo_forensics?.ip_based?.latitude || visit.forensics?.latitude},${visit.geo_forensics?.ip_based?.longitude || visit.forensics?.longitude}`}
             target="_blank"
-            className="inline-flex p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg transition-all border border-rose-500/20"
+            className="inline-flex p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-lg transition-all border border-slate-200"
             title="City-Level IP Trace"
           >
             <MapPin className="w-4 h-4" />
           </a>
         ) : (
-          <span className="text-[10px] text-slate-700 font-bold uppercase tracking-tighter opacity-40">
-            N/A Trace
+          <span className="text-[10px] text-slate-300 font-bold uppercase tracking-tighter opacity-40">
+            No Trace
           </span>
         )}
       </td>
@@ -214,7 +326,9 @@ function VisitRow({ visit }: { visit: Visit }) {
 export default function AdminDashboard() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [visits, setVisits] = useState<Visit[]>([]);
-  const [activeTab, setActiveTab] = useState<"requests" | "visits">("requests");
+  const [activeTab, setActiveTab] = useState<
+    "requests" | "visits" | "terminal"
+  >("requests");
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -225,14 +339,11 @@ export default function AdminDashboard() {
   const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/v1/admin/requests",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
+      const response = await fetch(`${API_URL}/api/v1/admin/requests`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-      );
+      });
       if (response.status === 401 || response.status === 403) {
         window.location.href = "/admin";
         return;
@@ -249,14 +360,11 @@ export default function AdminDashboard() {
   const fetchVisits = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/v1/admin/visits",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-          },
+      const response = await fetch(`${API_URL}/api/v1/admin/visits`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-      );
+      });
       if (response.status === 401 || response.status === 403) {
         window.location.href = "/admin";
         return;
@@ -302,7 +410,7 @@ export default function AdminDashboard() {
     setIsUpdating(true);
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/admin/requests/${id}/status`,
+        `${API_URL}/api/v1/admin/requests/${id}/status`,
         {
           method: "PATCH",
           headers: {
@@ -345,355 +453,329 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 font-sans">
-      {/* Top Sidebar / Header */}
-      <nav className="bg-[#0f172a] border-b border-slate-800 px-6 py-4 sticky top-0 z-50 shadow-xl">
-        <div className="max-w-[1600px] mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="bg-sky-500/20 p-2 rounded-lg border border-sky-500/30">
-              <ShieldCheck className="w-6 h-6 text-sky-400" />
-            </div>
-            <div>
-              <h1 className="text-lg font-black tracking-widest uppercase text-white">
-                CCID Legal Registry
-              </h1>
-              <p className="text-[10px] text-sky-500/60 font-bold uppercase tracking-tighter">
-                Administrative Control Panel
-              </p>
+    <div className="p-8 lg:p-10 space-y-8">
+      {/* Polished Government Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+            Intelligence Dashboard
+          </h2>
+          <p className="text-sm text-slate-500 font-medium mt-1">
+            Cross-platform intelligence overview and incident coordination.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 bg-white border border-slate-200 px-4 py-2 rounded-lg shadow-sm">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+            System Status: Operational
+          </span>
+        </div>
+      </div>
+      {/* Stats & Controls */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-4">
+              Quick Metrics
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <span className="text-sm font-semibold text-slate-600">
+                  {activeTab === "requests"
+                    ? "Case File Submissions"
+                    : "Intelligence Visitors"}
+                </span>
+                <span className="text-3xl font-bold text-slate-900">
+                  {activeTab === "requests"
+                    ? Array.isArray(requests)
+                      ? requests.length
+                      : 0
+                    : Array.isArray(visits)
+                      ? visits.length
+                      : 0}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-600 w-[60%]"></div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-900 border border-slate-800 rounded-full text-xs font-bold text-slate-400">
-              <Clock className="w-3 h-3 text-sky-500" />
-              {mounted && new Date().toLocaleDateString()}
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-4">
+              Control Center
+            </h3>
+            <div className="space-y-2">
+              <button
+                onClick={activeTab === "requests" ? fetchRequests : fetchVisits}
+                className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 text-sm font-semibold text-slate-700 transition-all"
+              >
+                Sync {activeTab === "requests" ? "Database" : "Traffic"}{" "}
+                <RefreshCcw className="w-4 h-4 text-blue-600" />
+              </button>
+              <button className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg bg-rose-50 border border-rose-100 text-rose-700 text-sm font-semibold hover:bg-rose-100 transition-all">
+                Clear Audit Logs <Trash2 className="w-4 h-4" />
+              </button>
             </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-3 space-y-6">
+          {/* Tab Switcher */}
+          <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-fit">
             <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors font-bold text-xs uppercase tracking-widest"
+              onClick={() => setActiveTab("requests")}
+              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "requests" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
             >
-              <LogOut className="w-4 h-4" />
-              Logout
+              Court Submissions
+            </button>
+            <button
+              onClick={() => setActiveTab("visits")}
+              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "visits" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              Intelligence Feed
+            </button>
+            <button
+              onClick={() => setActiveTab("terminal")}
+              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "terminal" ? "bg-[#0f172a] text-white shadow-sm border border-slate-800" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              Cyber Operations
             </button>
           </div>
-        </div>
-      </nav>
 
-      <main className="max-w-[1600px] mx-auto p-6 md:p-10">
-        {/* Stats & Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-10">
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-              <h3 className="text-slate-500 text-xs font-black uppercase tracking-[0.2em] mb-4">
-                Quick Stats
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-end">
-                  <span className="text-sm font-bold text-slate-400">
-                    {activeTab === "requests"
-                      ? "Total Submissions"
-                      : "Total Visitors"}
-                  </span>
-                  <span className="text-3xl font-black text-white">
-                    {activeTab === "requests"
-                      ? Array.isArray(requests)
-                        ? requests.length
-                        : 0
-                      : Array.isArray(visits)
-                        ? visits.length
-                        : 0}
-                  </span>
+          {activeTab === "requests" ? (
+            <>
+              {/* Filter Bar */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1 group">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Filter records by name or reference ID..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-11 pr-4 text-slate-700 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-50 transition-all text-sm font-medium shadow-sm"
+                  />
                 </div>
-                <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-sky-500 w-[60%]"></div>
+                <div className="flex gap-2">
+                  {["All", "Pending", "Reviewed", "Archived"].map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFilter(f)}
+                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${
+                        filter === f
+                          ? "bg-blue-700 text-white border-blue-700 shadow-sm"
+                          : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 shadow-sm"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-              <h3 className="text-slate-500 text-xs font-black uppercase tracking-[0.2em] mb-4">
-                Operations
-              </h3>
-              <div className="space-y-2">
-                <button
-                  onClick={
-                    activeTab === "requests" ? fetchRequests : fetchVisits
-                  }
-                  className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 text-sm font-bold transition-all"
-                >
-                  Refresh {activeTab === "requests" ? "Submissions" : "Traffic"}{" "}
-                  <RefreshCcw className="w-4 h-4 text-sky-500" />
-                </button>
-                <button className="w-full flex items-center justify-between p-3 rounded-lg bg-rose-500/5 hover:bg-rose-500/10 text-rose-400 text-sm font-bold transition-all">
-                  Clear Audit Logs <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-3 space-y-6">
-            {/* Tab Switcher */}
-            <div className="flex bg-slate-900/50 p-1 rounded-2xl border border-slate-800 w-fit">
-              <button
-                onClick={() => setActiveTab("requests")}
-                className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "requests" ? "bg-sky-500 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"}`}
-              >
-                Court Submissions
-              </button>
-              <button
-                onClick={() => setActiveTab("visits")}
-                className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === "visits" ? "bg-rose-500 text-white shadow-lg" : "text-slate-500 hover:text-slate-300"}`}
-              >
-                Visitor Intelligence
-              </button>
-            </div>
-
-            {activeTab === "requests" ? (
-              <>
-                {/* Filter Bar */}
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input
-                      type="text"
-                      placeholder="Search by name or order number..."
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="w-full bg-slate-900/50 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-slate-200 outline-none focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/5 transition-all text-sm"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    {["All", "Pending", "Reviewed", "Archived"].map((f) => (
-                      <button
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all border ${
-                          filter === f
-                            ? "bg-sky-600 text-white border-sky-600 shadow-lg shadow-sky-600/20"
-                            : "bg-slate-900/50 border-slate-800 text-slate-500 hover:border-slate-700"
-                        }`}
-                      >
-                        {f}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* List Submissions */}
-                <div className="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-sm">
-                  <table className="w-full text-left font-sans">
-                    <thead className="bg-[#0f172a] text-slate-500 text-[10px] uppercase font-black tracking-widest border-b border-slate-800">
+              {/* List Submissions */}
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <table className="w-full text-left font-sans">
+                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold tracking-widest border-b border-slate-200">
+                    <tr>
+                      <th className="px-6 py-4">Submission Date</th>
+                      <th className="px-6 py-4">Respondent</th>
+                      <th className="px-6 py-4">Ref Number</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-sm">
+                    {loading ? (
                       <tr>
-                        <th className="px-6 py-4">Submission Date</th>
-                        <th className="px-6 py-4">Respondent</th>
-                        <th className="px-6 py-4">Order Ref</th>
-                        <th className="px-6 py-4">Status</th>
-                        <th className="px-6 py-4 text-right">Actions</th>
+                        <td
+                          colSpan={5}
+                          className="px-6 py-20 text-center text-slate-400 animate-pulse font-semibold text-xs"
+                        >
+                          Synchronizing secure records...
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/50 text-sm">
-                      {loading ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-6 py-20 text-center text-slate-500 animate-pulse font-black uppercase text-[10px]"
+                    ) : filteredRequests.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="px-6 py-20 text-center text-slate-400 font-semibold text-xs"
+                        >
+                          No records found.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredRequests
+                        .slice()
+                        .reverse()
+                        .map((req) => (
+                          <tr
+                            key={req.id}
+                            className="hover:bg-slate-50/80 transition-colors group"
                           >
-                            Scanning Encrypted Database...
-                          </td>
-                        </tr>
-                      ) : filteredRequests.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-6 py-20 text-center text-slate-500 font-bold uppercase text-[10px]"
-                          >
-                            No matching submissions found
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredRequests
-                          .slice()
-                          .reverse()
-                          .map((req) => (
-                            <tr
-                              key={req.id}
-                              className="hover:bg-slate-800/30 transition-colors group"
-                            >
-                              <td className="px-6 py-4">
-                                <div className="flex flex-col">
-                                  <span className="text-xs font-bold text-slate-300">
-                                    {new Date(
-                                      req.created_at,
-                                    ).toLocaleDateString()}
-                                  </span>
-                                  <span className="text-[10px] text-slate-500 tracking-tighter">
-                                    {new Date(
-                                      req.created_at,
-                                    ).toLocaleTimeString()}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4">
-                                <span className="text-sm font-bold text-white uppercase tracking-tight">
-                                  {req.name}
+                            <td className="px-6 py-4">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-bold text-slate-700">
+                                  {new Date(
+                                    req.created_at,
+                                  ).toLocaleDateString()}
                                 </span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <code className="bg-slate-800 px-2 py-1 rounded text-sky-400 text-[10px] font-black uppercase">
-                                  {req.court_order_number}
-                                </code>
-                              </td>
-                              <td className="px-6 py-4">
-                                <div
-                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                    req.status === "Pending"
-                                      ? "bg-amber-500/10 text-amber-500"
-                                      : "bg-sky-500/10 text-sky-500"
-                                  }`}
-                                >
-                                  <span
-                                    className={`w-1 h-1 rounded-full ${req.status === "Pending" ? "bg-amber-500" : "bg-sky-500"}`}
-                                  ></span>
-                                  {req.status}
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 text-right">
-                                <button
-                                  onClick={() => setSelectedRequest(req)}
-                                  className="p-2 hover:bg-sky-500/20 rounded-lg transition-all group-hover:scale-110 active:scale-95"
-                                >
-                                  <ChevronRight className="w-4 h-4 text-sky-500" />
-                                </button>
-                              </td>
-                            </tr>
-                          ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            ) : (
-              /* Visitor Intelligence Table */
-              <div className="bg-slate-900/50 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md">
-                <div className="p-6 border-b border-slate-800 bg-slate-900 flex justify-between items-center text-sans">
-                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-rose-500">
-                    Live Visitor Forensic Stream
-                  </h3>
-                  <div className="flex gap-2">
-                    <span className="text-[10px] bg-rose-500/10 text-rose-500 px-3 py-1 rounded-full font-black uppercase tracking-widest">
-                      Real-time Monitoring
-                    </span>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm font-sans">
-                    <thead>
-                      <tr className="border-b border-slate-800 bg-slate-800/20">
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                          Timestamp
-                        </th>
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                          IP Forensics
-                        </th>
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                          Geo-Location
-                        </th>
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                          Carrier / ISP
-                        </th>
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                          System
-                        </th>
-                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
-                          Trace
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/50">
-                      {visits.length === 0 ? (
-                        <tr>
-                          <td
-                            colSpan={5}
-                            className="px-6 py-20 text-center text-slate-500 font-bold italic"
-                          >
-                            No forensic traffic logged yet.
-                          </td>
-                        </tr>
-                      ) : (
-                        visits
-                          .filter((v) =>
-                            v.ip_address
-                              .toLowerCase()
-                              .includes(search.toLowerCase()),
-                          )
-                          .slice()
-                          .reverse()
-                          .map((visit) => (
-                            <VisitRow key={visit.id} visit={visit} />
-                          ))
-                      )}
-                    </tbody>
-                  </table>
+                                <span className="text-[10px] text-slate-400 font-medium">
+                                  {new Date(
+                                    req.created_at,
+                                  ).toLocaleTimeString()}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="text-xs font-bold text-slate-900">
+                                {req.name}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <code className="bg-slate-100 px-2 py-1 rounded text-blue-700 text-[10px] font-bold font-mono">
+                                {req.court_order_number}
+                              </code>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                  req.status === "Pending"
+                                    ? "bg-amber-50 text-amber-700 border border-amber-100"
+                                    : "bg-blue-50 text-blue-700 border border-blue-100"
+                                }`}
+                              >
+                                <span
+                                  className={`w-1 h-1 rounded-full ${req.status === "Pending" ? "bg-amber-500" : "bg-blue-600"}`}
+                                ></span>
+                                {req.status}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <button
+                                onClick={() => setSelectedRequest(req)}
+                                className="p-2 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all"
+                              >
+                                <ChevronRight className="w-5 h-5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : activeTab === "terminal" ? (
+            <ForensicTerminal />
+          ) : (
+            /* Visitor Intelligence Table */
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex justify-between items-center font-sans">
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-blue-700">
+                  Live Digital Sovereignty Monitoring
+                </h3>
+                <div className="flex gap-2">
+                  <span className="text-[10px] bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                    Real-time Feed Active
+                  </span>
                 </div>
               </div>
-            )}
-          </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm font-sans">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Timestamp
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Network ID
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Geolocation
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Service Provider
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        System Agent
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
+                        Trace
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {visits.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="px-6 py-20 text-center text-slate-400 font-semibold text-xs italic"
+                        >
+                          No traffic records currently available.
+                        </td>
+                      </tr>
+                    ) : (
+                      visits
+                        .filter((v) =>
+                          v.ip_address
+                            .toLowerCase()
+                            .includes(search.toLowerCase()),
+                        )
+                        .slice()
+                        .reverse()
+                        .map((visit) => (
+                          <VisitRow key={visit.id} visit={visit} />
+                        ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
-      </main>
+      </div>
 
-      <footer className="max-w-[1600px] mx-auto p-10 border-t border-slate-800 mt-10">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">
-            Secure Clearance Level 4 Required | © 2026 CCID CYBER COMMAND
-          </p>
-          <div className="flex gap-4">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
-            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-              Global Link Uplink Online
-            </span>
-          </div>
-        </div>
-      </footer>
-
-      {/* Request Detail Modal overlay */}
+      {/* Detailed Case File Modal */}
       {selectedRequest && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md text-slate-200">
-          <div className="bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm text-slate-900">
+          <div className="bg-white border border-slate-200 w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></div>
-                <h2 className="text-sm font-black uppercase tracking-widest text-slate-300">
-                  File Detail: {selectedRequest.id.split("-")[0]}
+                <div className="w-2 h-2 rounded-full bg-blue-600 shadow-[0_0_4px_#2563eb]"></div>
+                <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  Case Record: {selectedRequest.id.split("-")[0]}
                 </h2>
               </div>
               <button
                 onClick={() => setSelectedRequest(null)}
-                className="text-slate-500 hover:text-white font-bold"
+                className="text-slate-400 hover:text-slate-600 font-bold transition-colors"
               >
-                ESC
+                Close
               </button>
             </div>
 
-            <div className="p-8 overflow-y-auto space-y-8 custom-scrollbar">
+            <div className="p-8 overflow-y-auto space-y-8">
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
-                    Respondent Name
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Respondent Full Name
                   </span>
-                  <p className="text-xl font-bold text-white uppercase">
+                  <p className="text-xl font-bold text-slate-900 leading-tight">
                     {selectedRequest.name}
                   </p>
                 </div>
                 <div className="space-y-1 text-right">
-                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
-                    Status
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Submission Status
                   </span>
                   <div>
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         selectedRequest.status === "Pending"
-                          ? "bg-amber-500/10 text-amber-500"
-                          : "bg-sky-500/10 text-sky-500"
+                          ? "bg-amber-50 text-amber-700 border border-amber-100"
+                          : "bg-blue-50 text-blue-700 border border-blue-100"
                       }`}
                     >
                       {selectedRequest.status}
@@ -703,241 +785,160 @@ export default function AdminDashboard() {
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
-                  <span className="text-[9px] font-black text-slate-600 uppercase block mb-1">
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">
                     Order Ref
                   </span>
-                  <p className="text-sm font-mono text-sky-400 font-bold">
+                  <p className="text-sm font-mono text-blue-700 font-bold">
                     {selectedRequest.court_order_number}
                   </p>
                 </div>
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
-                  <span className="text-[9px] font-black text-slate-600 uppercase block mb-1">
-                    Original Date
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">
+                    Scheduled Date
                   </span>
-                  <p className="text-sm font-bold text-slate-300">
+                  <p className="text-sm font-bold text-slate-700">
                     {new Date(selectedRequest.court_date).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl">
-                  <span className="text-[9px] font-black text-slate-600 uppercase block mb-1">
-                    Submission Time
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1">
+                    Submitted At
                   </span>
-                  <p className="text-sm font-bold text-slate-300">
+                  <p className="text-sm font-bold text-slate-700">
                     {new Date(selectedRequest.created_at).toLocaleTimeString()}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest block">
-                  Legal Explanation Details
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                  Official Statement / Explanation
                 </span>
-                <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl text-slate-300 text-sm leading-relaxed italic">
+                <div className="bg-blue-50/30 border border-blue-100 p-6 rounded-xl text-slate-700 text-sm leading-relaxed font-medium italic">
                   &quot;{selectedRequest.explanation_text}&quot;
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest block">
-                    Contact & Verification
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                    Contact Verification
                   </span>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-500 font-bold w-12">
-                        Primary:
-                      </span>
-                      <span className="text-slate-300 font-mono underline">
-                        {selectedRequest.phone_primary}
-                      </span>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                        <Users size={14} />
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase">
+                          Primary Contact
+                        </p>
+                        <p className="text-xs font-bold text-slate-700">
+                          {selectedRequest.phone_primary}
+                        </p>
+                      </div>
                     </div>
                     {selectedRequest.phone_secondary && (
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="text-slate-500 font-bold w-12">
-                          Sec:
-                        </span>
-                        <span className="text-slate-300 font-mono">
-                          {selectedRequest.phone_secondary}
-                        </span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                          <Users size={14} />
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase">
+                            Secondary Contact
+                          </p>
+                          <p className="text-xs font-bold text-slate-700">
+                            {selectedRequest.phone_secondary}
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
                 {selectedRequest.location && (
                   <div className="space-y-4">
-                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest block">
-                      Geolocation Data
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                      Geographical Evidence
                     </span>
                     <a
                       href={selectedRequest.location.maps_url}
                       target="_blank"
-                      className="flex items-center gap-3 p-3 bg-sky-500/5 border border-sky-500/20 rounded-xl hover:bg-sky-500/10 transition-colors group"
+                      className="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl hover:bg-emerald-100 transition-all group"
                     >
-                      <MapPin className="w-5 h-5 text-sky-500" />
+                      <MapPin className="w-5 h-5 text-emerald-600" />
                       <div>
-                        <p className="text-[10px] font-black text-sky-400 uppercase">
-                          View on Digital Map
+                        <p className="text-[10px] font-bold text-emerald-700 uppercase">
+                          Verify Location Map
                         </p>
-                        <p className="text-[9px] text-slate-500">
-                          Accuracy:{" "}
-                          {selectedRequest.location.accuracy.toFixed(1)}m
+                        <p className="text-[9px] text-emerald-600 font-medium">
+                          Precision:{" "}
+                          {selectedRequest.location.accuracy.toFixed(1)} meters
                         </p>
                       </div>
                     </a>
 
                     {resolvedAddress && (
-                      <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-                        <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest block">
-                          Resolved Street Address
+                      <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
+                        <span className="text-[9px] font-bold text-blue-700 uppercase tracking-widest block mb-1">
+                          Resolved Address
                         </span>
-                        <p className="text-xs font-bold text-slate-100 leading-relaxed italic">
+                        <p className="text-xs font-semibold text-slate-600 leading-tight">
                           {resolvedAddress}
                         </p>
                       </div>
                     )}
-
-                    <div className="h-32 rounded-xl overflow-hidden border border-slate-800 shadow-inner">
-                      <iframe
-                        width="100%"
-                        height="100%"
-                        frameBorder="0"
-                        scrolling="no"
-                        marginHeight={0}
-                        marginWidth={0}
-                        src={`https://maps.google.com/maps?q=${selectedRequest.location.latitude},${selectedRequest.location.longitude}&z=14&output=embed`}
-                        className="grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
-                      ></iframe>
-                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Forensic Section */}
-              <div className="space-y-4 pt-6 border-t border-slate-800/50">
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest block">
-                  Police Forensic Metadata
-                </span>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-slate-900/50 border border-slate-800/50 p-4 rounded-xl flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-rose-500/10 flex items-center justify-center">
-                      <ShieldCheck className="w-4 h-4 text-rose-500" />
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black text-slate-500 uppercase">
-                        Source IP Address
-                      </p>
-                      <p className="text-xs font-mono text-white font-bold">
-                        {selectedRequest.ip_address || "NOT LOGGED"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-slate-900/50 border border-slate-800/50 p-4 rounded-xl flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-sky-500/10 flex items-center justify-center">
-                      <Search className="w-4 h-4 text-sky-500" />
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-black text-slate-500 uppercase">
-                        System Fingerprint
-                      </p>
-                      <p className="text-[9px] text-slate-300 font-medium truncate max-w-[200px]">
-                        {selectedRequest.user_agent || "NOT CAPTURED"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced Forensic Intelligence Section */}
+              {/* Polished Tactical Forensics Section */}
               {selectedRequest.forensics && (
-                <div className="space-y-4 pt-6 border-t border-slate-800/50">
+                <div className="space-y-4 pt-8 border-t border-slate-100">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest block">
-                      Advanced Forensic Intelligence Report
+                    <span className="text-[11px] font-bold text-blue-700 uppercase tracking-widest flex items-center gap-2">
+                      Case Intelligence Report
                     </span>
-                    <span className="text-[9px] font-bold text-slate-500 uppercase">
-                      Provided by IP2Location Intelligence
+                    <span className="text-[9px] font-semibold text-slate-400 uppercase">
+                      Network Analysis
                     </span>
                   </div>
-                  <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                    <div className="bg-slate-800/50 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                      <p className="text-[10px] font-black uppercase text-slate-400">
-                        Network & Carrier Analysis
-                      </p>
-                      <div className="flex gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span className="text-[8px] font-bold text-emerald-500 uppercase">
-                          Live Trace Active
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-6 grid grid-cols-2 gap-y-6 gap-x-10">
-                      <div>
-                        <p className="text-[9px] font-black text-slate-600 uppercase mb-1">
-                          ISP / Provider
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl divide-y divide-slate-200 shadow-sm">
+                    <div className="grid grid-cols-2 divide-x divide-slate-200">
+                      <div className="p-4">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                          Service Provider
                         </p>
-                        <p className="text-sm font-bold text-sky-400">
+                        <p className="text-xs font-bold text-slate-800">
                           {selectedRequest.forensics.isp || "Unknown"}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-600 uppercase mb-1">
-                          Network Type
+                      <div className="p-4">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                          Access Method
                         </p>
-                        <p className="text-sm font-bold text-white uppercase">
+                        <p className="text-xs font-bold text-slate-800 uppercase">
                           {selectedRequest.forensics.usage_type || "N/A"}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-600 uppercase mb-1">
-                          Carrier Brand
+                    </div>
+                    <div className="grid grid-cols-2 divide-x divide-slate-200">
+                      <div className="p-4">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                          Connection Identity
                         </p>
-                        <p className="text-sm font-bold text-white uppercase">
-                          {selectedRequest.forensics.mobile_brand ||
-                            "Broadband/Static"}
+                        <p className="text-xs font-mono font-bold text-blue-700">
+                          {selectedRequest.ip_address || "Hidden"}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-600 uppercase mb-1">
-                          Regional Intelligence
+                      <div className="p-4">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                          Origin City
                         </p>
-                        <p className="text-sm font-bold text-white uppercase">
+                        <p className="text-xs font-bold text-slate-800 uppercase">
                           {selectedRequest.forensics.city_name},{" "}
                           {selectedRequest.forensics.country_name}
                         </p>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-600 uppercase mb-1">
-                          Elevation / MSL
-                        </p>
-                        <p className="text-xs font-mono text-slate-400">
-                          {selectedRequest.forensics?.elevation || 0} meters
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[9px] font-black text-rose-500 uppercase mb-1 flex items-center gap-1">
-                          <ShieldCheck className="w-2.5 h-2.5" /> Lateral
-                          Network Nodes
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {selectedRequest.forensics?.internal_nodes?.length >
-                          0 ? (
-                            selectedRequest.forensics.internal_nodes.map(
-                              (node: string) => (
-                                <span
-                                  key={node}
-                                  className="text-[9px] font-mono bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded border border-rose-500/20"
-                                >
-                                  {node}
-                                </span>
-                              ),
-                            )
-                          ) : (
-                            <p className="text-[9px] text-slate-600 italic">
-                              No nodes detected
-                            </p>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -945,19 +946,21 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            <div className="p-8 border-t border-slate-800 bg-slate-900/50 flex gap-4">
+            <div className="p-8 border-t border-slate-100 bg-slate-50/50 flex gap-4">
               <button
                 disabled={isUpdating || selectedRequest.status === "Reviewed"}
                 onClick={() => updateStatus(selectedRequest.id, "Reviewed")}
-                className="flex-1 bg-sky-600 hover:bg-sky-500 disabled:opacity-30 text-white font-black py-4 rounded-2xl shadow-xl shadow-sky-900/20 transition-all uppercase tracking-widest text-xs"
+                className="flex-1 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-100 transition-all uppercase tracking-widest text-xs"
               >
-                {isUpdating ? "Processing..." : "Mark as Reviewed"}
+                {isUpdating
+                  ? "Storing Resolution..."
+                  : "Mark as Officially Reviewed"}
               </button>
               <button
                 onClick={() => setSelectedRequest(null)}
-                className="px-8 border border-slate-700 text-slate-400 font-bold rounded-2xl hover:bg-slate-800 transition-colors uppercase text-[10px]"
+                className="px-8 bg-white border border-slate-200 text-slate-500 font-bold rounded-xl hover:bg-slate-50 transition-all uppercase text-[10px]"
               >
-                Close
+                Dismiss
               </button>
             </div>
           </div>

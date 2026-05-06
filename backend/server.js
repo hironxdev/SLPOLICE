@@ -10,13 +10,20 @@ import deviceRoutes from "./routes/device.js";
 import forensicRoutes from "./routes/forensics.js";
 import analyticsRoutes from "./routes/analytics.js";
 import emailTraceRoutes from "./routes/emailTrace.js";
+import systemRoutes from "./routes/system.js";
+
+import { setupTerminal } from "./terminalBridge.js";
 
 dotenv.config();
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGIN || '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
@@ -29,6 +36,7 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/forensics", forensicRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/emails", emailTraceRoutes);
+app.use("/api/system", systemRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -43,6 +51,8 @@ process.on('unhandledRejection', (err) => {
 });
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+setupTerminal(server);
 
 // Keep the process alive
 setInterval(() => {}, 10000);
