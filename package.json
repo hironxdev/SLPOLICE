@@ -4,9 +4,9 @@
   "description": "Orchestrator for CCID Suite, Court Portal, and SLIIT Vacancy System",
   "scripts": {
     "dev": "npx concurrently \"npm:dev:main-*\" \"npm:dev:court-*\"",
-    "dev:main-backend": "cd backend && PORT=8000 node --watch server.js",
+    "dev:main-backend": "cd backend && node --watch server.js",
     "dev:main-frontend": "cd frontend && npm run dev -- -p 3000",
-    "dev:court-backend": "cd court-backend && PORT=8005 node --watch server.js",
+    "dev:court-backend": "cd court-backend && node --watch server.js",
     "dev:court-frontend": "cd court-frontend && npm run dev -- -p 3001",
     "build": "npm run build:frontend && npm run build:court-frontend",
     "build:frontend": "cd frontend && npm run build",

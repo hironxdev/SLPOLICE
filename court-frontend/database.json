@@ -1,0 +1,10 @@
+{
+  "visits": [],
+  "applications": [],
+  "cases": [],
+  "evidence": [],
+  "admin": {
+    "username": "admin",
+    "password_hash": "admin123"
+  }
+}

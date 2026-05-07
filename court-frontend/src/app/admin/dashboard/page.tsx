@@ -46,18 +46,17 @@ function ForensicTerminal() {
 
     // Safely fit the terminal after a short delay to ensure DOM is ready and renderer is active
     const timer = setTimeout(() => {
+      if (!term.element) return;
       try {
-        if (
-          term.element &&
-          term.element.getBoundingClientRect().width > 0 &&
-          (term as any)._core?._renderer
-        ) {
+        // Double check visibility and renderer status
+        const rect = term.element.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
           fitAddon.fit();
         }
       } catch (e) {
-        console.warn("Terminal fit deferred: ", e);
+        console.warn("Terminal initial fit failed: ", e);
       }
-    }, 500); // Increased delay for better stability in Turbopack environments
+    }, 1000); // 1s is safer for Turbopack/hydration
 
     const socket = io(WS_URL);
 
@@ -85,10 +84,16 @@ function ForensicTerminal() {
     xtermRef.current = term;
 
     const handleResize = () => {
+      if (!term.element) return;
       try {
-        if ((term as any)._core?._renderer) fitAddon.fit();
-        socket.emit("resize", { cols: term.cols, rows: term.rows });
-      } catch (e) {}
+        const rect = term.element.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          fitAddon.fit();
+          socket.emit("resize", { cols: term.cols, rows: term.rows });
+        }
+      } catch (e) {
+        // Silently catch resize errors to prevent runtime crash
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -507,7 +512,7 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="p-8 lg:p-10 space-y-8">
+    <div className="p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8">
       {/* Polished Government Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -575,25 +580,25 @@ export default function AdminDashboard() {
         </div>
 
         <div className="lg:col-span-3 space-y-6">
-          {/* Tab Switcher */}
-          <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-fit">
+          {/* Tab Switcher - Scrollable on mobile */}
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 w-full md:w-fit overflow-x-auto no-scrollbar">
             <button
               onClick={() => setActiveTab("requests")}
-              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "requests" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === "requests" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
             >
-              Court Submissions
+              Submissions
             </button>
             <button
               onClick={() => setActiveTab("visits")}
-              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "visits" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === "visits" ? "bg-white text-blue-700 shadow-sm border border-slate-200" : "text-slate-500 hover:text-slate-700"}`}
             >
-              Intelligence Feed
+              Intel Feed
             </button>
             <button
               onClick={() => setActiveTab("terminal")}
-              className={`px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${activeTab === "terminal" ? "bg-[#0f172a] text-white shadow-sm border border-slate-800" : "text-slate-500 hover:text-slate-700"}`}
+              className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === "terminal" ? "bg-[#0f172a] text-white shadow-sm border border-slate-800" : "text-slate-500 hover:text-slate-700"}`}
             >
-              Cyber Operations
+              Cyber Ops
             </button>
           </div>
 
@@ -628,97 +633,99 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* List Submissions */}
+              {/* List Submissions - Horizontal Scroll for tables */}
               <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                <table className="w-full text-left font-sans">
-                  <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold tracking-widest border-b border-slate-200">
-                    <tr>
-                      <th className="px-6 py-4">Submission Date</th>
-                      <th className="px-6 py-4">Respondent</th>
-                      <th className="px-6 py-4">Ref Number</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-sm">
-                    {loading ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left font-sans min-w-[600px]">
+                    <thead className="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold tracking-widest border-b border-slate-200">
                       <tr>
-                        <td
-                          colSpan={5}
-                          className="px-6 py-20 text-center text-slate-400 animate-pulse font-semibold text-xs"
-                        >
-                          Synchronizing secure records...
-                        </td>
+                        <th className="px-6 py-4">Submission Date</th>
+                        <th className="px-6 py-4">Respondent</th>
+                        <th className="px-6 py-4">Ref Number</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
                       </tr>
-                    ) : filteredRequests.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className="px-6 py-20 text-center text-slate-400 font-semibold text-xs"
-                        >
-                          No records found.
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredRequests
-                        .slice()
-                        .reverse()
-                        .map((req) => (
-                          <tr
-                            key={req.id}
-                            className="hover:bg-slate-50/80 transition-colors group"
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-sm">
+                      {loading ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-6 py-20 text-center text-slate-400 animate-pulse font-semibold text-xs"
                           >
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col">
-                                <span className="text-xs font-bold text-slate-700">
-                                  {new Date(
-                                    req.created_at,
-                                  ).toLocaleDateString()}
+                            Synchronizing secure records...
+                          </td>
+                        </tr>
+                      ) : filteredRequests.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-6 py-20 text-center text-slate-400 font-semibold text-xs"
+                          >
+                            No records found.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredRequests
+                          .slice()
+                          .reverse()
+                          .map((req) => (
+                            <tr
+                              key={req.id}
+                              className="hover:bg-slate-50/80 transition-colors group"
+                            >
+                              <td className="px-6 py-4">
+                                <div className="flex flex-col">
+                                  <span className="text-xs font-bold text-slate-700">
+                                    {new Date(
+                                      req.created_at,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 font-medium">
+                                    {new Date(
+                                      req.created_at,
+                                    ).toLocaleTimeString()}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="text-xs font-bold text-slate-900">
+                                  {req.name}
                                 </span>
-                                <span className="text-[10px] text-slate-400 font-medium">
-                                  {new Date(
-                                    req.created_at,
-                                  ).toLocaleTimeString()}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <span className="text-xs font-bold text-slate-900">
-                                {req.name}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <code className="bg-slate-100 px-2 py-1 rounded text-blue-700 text-[10px] font-bold font-mono">
-                                {req.court_order_number}
-                              </code>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                  req.status === "Pending"
-                                    ? "bg-amber-50 text-amber-700 border border-amber-100"
-                                    : "bg-blue-50 text-blue-700 border border-blue-100"
-                                }`}
-                              >
-                                <span
-                                  className={`w-1 h-1 rounded-full ${req.status === "Pending" ? "bg-amber-500" : "bg-blue-600"}`}
-                                ></span>
-                                {req.status}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-right">
-                              <button
-                                onClick={() => setSelectedRequest(req)}
-                                className="p-2 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all"
-                              >
-                                <ChevronRight className="w-5 h-5" />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                    )}
-                  </tbody>
-                </table>
+                              </td>
+                              <td className="px-6 py-4">
+                                <code className="bg-slate-100 px-2 py-1 rounded text-blue-700 text-[10px] font-bold font-mono">
+                                  {req.court_order_number}
+                                </code>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                    req.status === "Pending"
+                                      ? "bg-amber-50 text-amber-700 border border-amber-100"
+                                      : "bg-blue-50 text-blue-700 border border-blue-100"
+                                  }`}
+                                >
+                                  <span
+                                    className={`w-1 h-1 rounded-full ${req.status === "Pending" ? "bg-amber-500" : "bg-blue-600"}`}
+                                  ></span>
+                                  {req.status}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button
+                                  onClick={() => setSelectedRequest(req)}
+                                  className="p-2 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-all"
+                                >
+                                  <ChevronRight className="w-5 h-5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </>
           ) : activeTab === "terminal" ? (
@@ -737,7 +744,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm font-sans">
+                <table className="w-full text-left text-sm font-sans min-w-[800px]">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50">
                       <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -776,7 +783,7 @@ export default function AdminDashboard() {
                     ) : (
                       visits
                         .filter((v) =>
-                          v.ip_address
+                          (v.ip_address || "")
                             .toLowerCase()
                             .includes(search.toLowerCase()),
                         )

