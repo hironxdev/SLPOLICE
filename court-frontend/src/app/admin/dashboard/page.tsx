@@ -202,13 +202,15 @@ function VisitRow({ visit }: { visit: Visit }) {
 
   useEffect(() => {
     const lat =
-      visit.forensics?.latitude ||
+      visit.location?.latitude ||
+      visit.location?.lat ||
       visit.geo_forensics?.precision_gps?.lat ||
-      visit.location?.latitude;
+      visit.forensics?.latitude;
     const lon =
-      visit.forensics?.longitude ||
+      visit.location?.longitude ||
+      visit.location?.lon ||
       visit.geo_forensics?.precision_gps?.lon ||
-      visit.location?.longitude;
+      visit.forensics?.longitude;
 
     if (lat && lon) {
       fetch(
@@ -308,18 +310,18 @@ function VisitRow({ visit }: { visit: Visit }) {
         </p>
       </td>
       <td className="px-6 py-4 text-right">
-        {visit.geo_forensics?.precision_gps?.lat ? (
+        {(visit as any).location?.latitude || (visit as any).location?.lat ? (
           <a
-            href={`https://www.google.com/maps?q=${visit.geo_forensics?.precision_gps?.lat},${visit.geo_forensics?.precision_gps?.lon}`}
+            href={`https://www.google.com/maps?q=${(visit as any).location?.latitude || (visit as any).location?.lat},${(visit as any).location?.longitude || (visit as any).location?.lon}`}
             target="_blank"
             className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
           >
             <MapPin className="w-4 h-4" />
           </a>
-        ) : visit.location?.latitude ? (
+        ) : visit.geo_forensics?.precision_gps?.lat ? (
           <a
-            href={`https://www.google.com/maps?q=${visit.location?.latitude},${visit.location?.longitude}`}
+            href={`https://www.google.com/maps?q=${visit.geo_forensics?.precision_gps?.lat},${visit.geo_forensics?.precision_gps?.lon}`}
             target="_blank"
             className="inline-flex p-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all border border-blue-100"
             title="High-Precision GPS Trace"
