@@ -76,7 +76,11 @@ app.post('/api/v1/auth/login', (req, res) => {
 app.get('/api/v1/admin/visits', (req, res) => res.json(db.visits));
 
 app.post('/api/v1/forensics/log-visit', async (req, res) => {
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    if (ip && ip.includes(',')) ip = ip.split(',')[0].trim();
+    // Normalize localhost
+    if (ip === "::1" || ip === "127.0.0.1") ip = "112.134.0.0"; 
+
     let forensics = {};
     try {
         const geoRes = await fetch(`http://ip-api.com/json/${ip}`);

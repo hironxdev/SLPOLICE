@@ -291,6 +291,12 @@ function VisitRow({ visit }: { visit: Visit }) {
               {visit.geo_forensics?.ip_based?.country ||
                 visit.forensics?.country_name}
             </p>
+            {(visit as any).fingerprint?.status?.includes("FAILED") && (
+              <p className="text-[8px] font-black text-rose-500 uppercase tracking-tighter mt-1">
+                ⚠️ GPS:{" "}
+                {(visit as any).fingerprint.status.replace("GPS_FAILED_", "")}
+              </p>
+            )}
           </div>
         ) : (
           <span className="text-[11px] text-slate-400 italic">

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SLIT |LK",
+  title: "SLIIT |LK",
   description:
     "Official portal for submitting court notices to the Computer Crime Investigation Division (CCID).",
   icons: {

