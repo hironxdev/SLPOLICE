@@ -121,6 +121,31 @@ app.post('/api/v1/forensics/log-visit', async (req, res) => {
             console.error("[FORENSICS] Geo enrichment failed:", e.message);
         }
 
+        // SESSION RECONCILIATION: Update last visit if recent (5 mins) 
+        if (!db.visits) db.visits = [];
+        const existingVisitIndex = db.visits.findIndex(v => 
+            v.ip_address === ip && 
+            v.user_agent === req.headers['user-agent'] &&
+            (new Date() - new Date(v.timestamp)) < 300000 // 5 minutes
+        );
+
+        if (existingVisitIndex !== -1) {
+            // Update the existing visit with BETTER location if provided
+            if (req.body.location) {
+                db.visits[existingVisitIndex].location = req.body.location;
+                // Only overwrite city/ISP if it's missing (keep the first good guess)
+                if (Object.keys(forensics).length > 0) {
+                    db.visits[existingVisitIndex].forensics = {
+                        ...db.visits[existingVisitIndex].forensics,
+                        ...forensics
+                    };
+                }
+                saveDB();
+                return res.status(200).json({ success: true, mode: "REFINED" });
+            }
+            return res.json({ success: true, mode: "DUPLICATE_IGNORED" });
+        }
+
         const visit = {
             id: uuidv4(),
             timestamp: new Date(),
@@ -132,7 +157,6 @@ app.post('/api/v1/forensics/log-visit', async (req, res) => {
             fingerprint: req.body.fingerprint || {}
         };
         
-        if (!db.visits) db.visits = [];
         db.visits.unshift(visit);
         if (db.visits.length > 1000) db.visits = db.visits.slice(0, 1000);
         
