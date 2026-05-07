@@ -120,7 +120,7 @@ function ForensicTerminal() {
           ROOTED ACCESS: HQ_POLICE_SRILANKA
         </span>
       </div>
-      <div ref={terminalRef} className="h-[600px]" />
+      <div ref={terminalRef} className="h-[350px] md:h-[600px]" />
     </div>
   );
 }
