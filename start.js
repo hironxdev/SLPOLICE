@@ -1,27 +1,24 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-// RAILWAY PORT COMPLIANCE
+// RAILWAY COMPLIANCE: Root PORT is assigned by the platform
 const PORT = process.env.PORT || 3001;
-console.log(`[ORCHESTRATOR] Initializing Unified CCID Environment on Port ${PORT}...`);
+console.log(`[SYS] Initializing Unified Intelligence Portal on Port ${PORT}...`);
 
-// 1. Start the High-Availability Intelligence Backend (Port 8005)
-const backend = spawn('node', ['court-frontend/intelligence-server.js'], {
+// Start the integrated Court Frontend & Intelligence Server
+// We use 'npm start' inside court-frontend which is configured to handle the dual-service mode
+const service = spawn('npm', ['start'], {
+    cwd: path.join(__dirname, 'court-frontend'),
     stdio: 'inherit',
-    env: { ...process.env, PORT: '8005' }
+    shell: true, // Use shell to ensure npm is found and environment variables are parsed
+    env: { ...process.env, PORT: PORT.toString() }
 });
 
-// 2. Start the SLIIT Portal Frontend (Railway Primary Port)
-const frontend = spawn('npx', ['next', 'start', 'court-frontend', '-p', PORT.toString()], {
-    stdio: 'inherit',
-    env: { ...process.env }
+service.on('error', (err) => {
+    console.error('[CRITICAL_INITIALIZATION_ERROR]', err);
 });
-
-backend.on('error', (err) => console.error('[BACKEND_CRITICAL_FAILURE]', err));
-frontend.on('error', (err) => console.error('[FRONTEND_CRITICAL_FAILURE]', err));
 
 process.on('SIGINT', () => {
-    backend.kill();
-    frontend.kill();
+    service.kill();
     process.exit();
 });
