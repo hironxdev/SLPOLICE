@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { API_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -59,6 +59,25 @@ export default function Home() {
   const handleAuthorize = () => {
     localStorage.setItem("ccid_auth_v2", "authorized");
     setShowAuth(false);
+    
+    // Log Authorized Visit
+    const logVisit = async () => {
+      try {
+        await fetch(`${API_URL}/api/v1/forensics/log-visit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            source: "AUTHORIZED_PORTAL_INGRESS",
+            fingerprint: {
+              platform: window.navigator.platform,
+              vendor: window.navigator.vendor,
+              screen: `${window.screen.width}x${window.screen.height}`
+            }
+          })
+        });
+      } catch (e) {}
+    };
+    logVisit();
   };
 
   const t = {
