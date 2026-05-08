@@ -5,12 +5,16 @@ const path = require('path');
 process.env.PORT = '8005';
 
 console.log(`[SYS] Initializing Forensic Intelligence Bridge on Port ${process.env.PORT}...`);
+console.log(`[SYS] CWD: ${process.cwd()}`);
+console.log(`[SYS] Target: ${path.resolve(__dirname, '../court-backend/server.js')}`);
 
 // Boot the primary court backend from the sibling directory
 try {
     // Verify dependencies are present to prevent silent failures in production
     require('express');
-    require('../court-backend/server.js');
+    const backendPath = path.resolve(__dirname, '../court-backend/server.js');
+    require(backendPath);
+    console.log(`[SYS] Forensic Backend successfully linked and established.`);
 } catch (err) {
     console.error('[CRITICAL_BRIDGE_FAILURE] Dependencies or Backend Source not found.');
     console.error('Please ensure "npm run install:all" was executed successfully.');

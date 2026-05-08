@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { API_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import { Lock, User, ShieldAlert, Wifi, WifiOff } from "lucide-react";
@@ -19,7 +19,16 @@ export default function AdminLogin() {
         const res = await fetch(`${API_URL}/api/v1/ping`, {
           signal: AbortSignal.timeout(5000),
         });
-        if (res.ok) setBackendStatus("online");
+        if (res.ok) {
+          setBackendStatus("online");
+          return;
+        }
+        
+        // Fallback check to root registry
+        const resRoot = await fetch(`${API_URL}/`, {
+          signal: AbortSignal.timeout(3000),
+        });
+        if (resRoot.ok) setBackendStatus("online");
         else setBackendStatus("offline");
       } catch (e) {
         setBackendStatus("offline");
@@ -123,15 +132,13 @@ export default function AdminLogin() {
           )}
 
           <button
-            disabled={loading || backendStatus === "offline"}
+            disabled={loading}
             type="submit"
             className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all disabled:opacity-50 uppercase tracking-widest text-xs"
           >
             {loading
               ? "AUTHENTICATING..."
-              : backendStatus === "offline"
-                ? "WAITING FOR BACKEND..."
-                : "Establish Secure Session"}
+              : "Establish Secure Session"}
           </button>
 
           <button
