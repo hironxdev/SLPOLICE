@@ -1,8 +1,8 @@
 const path = require('path');
 
-// Ensure the backend runs on the dedicated intelligence port (8005)
-// unless overridden by the environment.
-process.env.PORT = process.env.PORT || 8005;
+// FORCE the backend to listen on its dedicated internal port 8005
+// to avoid collision with the Next.js frontend port (assigned by process.env.PORT)
+process.env.PORT = '8005';
 
 console.log(`[SYS] Initializing Forensic Intelligence Bridge on Port ${process.env.PORT}...`);
 
