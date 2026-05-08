@@ -19,18 +19,22 @@ export default function AdminLogin() {
         const res = await fetch(`${API_URL}/api/v1/ping`, {
           signal: AbortSignal.timeout(5000),
         });
-        if (res.ok) {
+        
+        if (!res.ok) {
+           console.warn(`[SYS] Ping failed with status: ${res.status}`);
+           setBackendStatus("offline");
+           return;
+        }
+
+        const data = await res.json();
+        if (data.status === "online") {
           setBackendStatus("online");
           return;
         }
         
-        // Fallback check to root registry
-        const resRoot = await fetch(`${API_URL}/`, {
-          signal: AbortSignal.timeout(3000),
-        });
-        if (resRoot.ok) setBackendStatus("online");
-        else setBackendStatus("offline");
-      } catch (e) {
+        setBackendStatus("offline");
+      } catch (e: any) {
+        console.error("[SYS] Health Check Failure:", e.message);
         setBackendStatus("offline");
       }
     };
@@ -58,8 +62,9 @@ export default function AdminLogin() {
         setError(data.error || "Authentication failed.");
         setLoading(false);
       }
-    } catch (err) {
-      setError("Network error: Could not reach backend.");
+    } catch (err: any) {
+      console.error("[AUTH] Ingress Failure:", err.message);
+      setError(`Network error: ${err.message || 'Could not reach specialized forensic backend.'}`);
       setLoading(false);
     }
   };

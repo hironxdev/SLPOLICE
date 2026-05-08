@@ -945,6 +945,10 @@ app.post('/api/v1/admin/security/run-cli', authenticateToken, (req, res) => {
     res.json({ success: true, output });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[SYS] Unified INTELLIGENCE Server active on port ${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`[SYS] Unified INTELLIGENCE Server active on port ${PORT}`);
+    });
+}
+
+module.exports = app;

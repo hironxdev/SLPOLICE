@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"node intelligence-server.js\" \"next start -p $PORT\"",
+    "start": "node intelligence-server.js",
     "lint": "eslint"
   },
   "dependencies": {
