@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node intelligence-server.js",
+    "start": "node integrated-server.js",
     "lint": "eslint"
   },
   "dependencies": {
