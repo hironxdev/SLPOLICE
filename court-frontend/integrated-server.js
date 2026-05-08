@@ -146,9 +146,9 @@ nextApp.prepare().then(() => {
         ]);
     });
 
-    // 2. PUBLIC NEXT.JS HANDLER
-    // Use named parameter wildcard /:path* for Express 5 + pathToRegexp compatibility
-    server.all('/:path*', (req, res) => {
+    // 2. PUBLIC NEXT.JS HANDLER (CATCH-ALL)
+    // Using a direct middleware fallback to completely bypass express routing regex issues
+    server.use((req, res) => {
         return handle(req, res);
     });
 
