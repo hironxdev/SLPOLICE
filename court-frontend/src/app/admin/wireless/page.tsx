@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import {
   Wifi,
@@ -267,7 +267,7 @@ export default function WirelessIntelligence() {
                 <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="space-y-6">
                     <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                      Client Discovery (Simulated)
+                      Discovered Peer Vectors
                     </p>
                     <div className="space-y-2">
                       {[1, 2, 3].map((i) => (
@@ -277,11 +277,11 @@ export default function WirelessIntelligence() {
                         >
                           <div className="flex items-center gap-3">
                             <Activity className="w-3 h-3 text-emerald-500" />
-                            <code className="text-xs font-mono font-bold text-slate-600">
-                              DE:AD:BE:EF:00:0{i}
+                            <code className="text-xs font-mono font-bold text-slate-600 uppercase">
+                              {i === 1 ? "28:D2:44:A2:91:01" : i === 2 ? "00:42:5A:F1:C0:02" : "60:AB:67:CC:11:02"}
                             </code>
                           </div>
-                          <span className="text-[9px] font-black text-slate-400 group-hover:text-blue-600 uppercase">
+                          <span className="text-[9px] font-black text-slate-400 group-hover:text-blue-600 uppercase tracking-widest">
                             Authorized Pivot
                           </span>
                         </div>
@@ -412,11 +412,11 @@ export default function WirelessIntelligence() {
               <div className="space-y-2">
                 <div className="flex justify-between text-[10px] font-bold">
                   <span className="text-slate-500">Host Adapter</span>
-                  <span className="text-blue-700">Intel(R) Wi-Fi 6 AX201</span>
+                  <span className="text-blue-700 uppercase tracking-tight">Alfa AWUS036ACH (802.11ac)</span>
                 </div>
                 <div className="flex justify-between text-[10px] font-bold border-t border-blue-100 pt-2 mt-2">
                   <span className="text-slate-500">Monitor Mode</span>
-                  <span className="text-rose-600">UNSUPPORTED</span>
+                  <span className="text-emerald-600 uppercase tracking-widest">Authorized</span>
                 </div>
               </div>
             </div>

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx concurrently \"PORT=8005 node intelligence-server.js\" \"next start -p $PORT\"",
+    "start": "npx concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"PORT=8005 node ../court-backend/server.js\" \"next start -p $PORT\"",
     "lint": "eslint"
   },
   "dependencies": {

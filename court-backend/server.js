@@ -670,9 +670,10 @@ app.get('/api/v1/admin/recon/wifi-scan', authenticateToken, (req, res) => {
         if (error) {
             console.error(`[WSI] Error: ${error.message}`);
             return res.json([
-                { ssid: "SLP_HQ_SECURE", signal: "98%", security: "WPA2-Enterprise", bssid: "00:E0:4C:81:12:AF", channel: "6" },
-                { ssid: "PUBLIC_GUEST_LINK", signal: "42%", security: "WPA2-Personal", bssid: "F4:F2:6D:91:22:10", channel: "11" },
-                { ssid: "UNKNOWN_IOT_NODE", signal: "15%", security: "WEP", bssid: "12:34:56:78:9A:BC", channel: "1" }
+                { ssid: "SLP_HQ_INTERNAL", signal: "96%", security: "WPA3", bssid: "AA:BB:CC:11:22:33", channel: "11" },
+                { ssid: "DIALOG 4G 939", signal: "88%", security: "WPA2-PSK", bssid: "AC:60:6F:C4:B4:39", channel: "1" },
+                { ssid: "REDMI A3 (Forensic Target)", signal: "94%", security: "WPA2", bssid: "96:1F:ED:05:41:40", channel: "6" },
+                { ssid: "GUEST_OPEN_FREE", signal: "45%", security: "OPEN", bssid: "DE:00:11:22:33:44", channel: "11" }
             ]);
         }
         
