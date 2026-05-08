@@ -279,6 +279,7 @@ function VisitRow({ visit }: { visit: Visit }) {
         ) : visit.geo_forensics?.ip_based || visit.forensics ? (
           <div className="space-y-0.5">
             <p className="text-xs font-semibold text-slate-700">
+              {visit.forensics?.district ? `${visit.forensics.district}, ` : ""}
               {visit.geo_forensics?.ip_based?.city ||
                 visit.forensics?.city_name ||
                 "Unknown City"}

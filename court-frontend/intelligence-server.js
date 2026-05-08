@@ -83,7 +83,7 @@ app.post('/api/v1/forensics/log-visit', async (req, res) => {
 
     let forensics = {};
     try {
-        const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
+        const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city,district,zip,lat,lon,timezone,isp,org,as,mobile,proxy,query`);
         forensics = await geoRes.json();
     } catch (e) {}
 
