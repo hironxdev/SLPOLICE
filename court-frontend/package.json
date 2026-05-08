@@ -5,11 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"PORT=8005 node ../court-backend/server.js\" \"next start -p $PORT\"",
+    "start": "npx concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"node intelligence-server.js\" \"next start -p $PORT\"",
     "lint": "eslint"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "concurrently": "^9.2.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
@@ -29,7 +30,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
