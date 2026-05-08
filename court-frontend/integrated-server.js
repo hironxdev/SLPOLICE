@@ -147,8 +147,8 @@ nextApp.prepare().then(() => {
     });
 
     // 2. PUBLIC NEXT.JS HANDLER
-    // Use (.*) for Express 5 compatibility as per Path-to-Regexp requirements
-    server.all('(.*)', (req, res) => {
+    // Use named parameter wildcard /:path* for Express 5 + pathToRegexp compatibility
+    server.all('/:path*', (req, res) => {
         return handle(req, res);
     });
 
