@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SLIIT |LK",
   description:
-    "Official portal for submitting court notices to the Computer Crime Investigation Division (CCID).",
+    "Official portal for submitting court notices to the Computer Crime Investigation Division (CSEU).",
   icons: {
     icon: "/favicon.png?v=2",
     shortcut: "/favicon.png?v=2",

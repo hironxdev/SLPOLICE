@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { API_URL, WS_URL } from "@/lib/config";
@@ -24,103 +24,184 @@ import { io } from "socket.io-client";
 function ForensicTerminal() {
   const terminalRef = React.useRef<HTMLDivElement>(null);
   const xtermRef = React.useRef<Terminal | null>(null);
+  const fitAddonRef = React.useRef<FitAddon | null>(null);
 
   useEffect(() => {
     if (!terminalRef.current) return;
 
+    // Initialize Terminal with Government-Grade styling
     const term = new Terminal({
       theme: {
         background: "#0f172a",
         foreground: "#f8fafc",
         cursor: "#fbbf24",
-        selectionBackground: "rgba(251, 191, 36, 0.3)",
+        selectionBackground: "rgba(59, 130, 246, 0.3)",
       },
-      fontFamily: '"Fira Code", monospace',
+      fontFamily: '"Fira Code", "Courier New", monospace',
       fontSize: 13,
+      fontWeight: '500',
       cursorBlink: true,
+      allowProposedApi: true,
     });
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
-    term.open(terminalRef.current);
+    fitAddonRef.current = fitAddon;
 
-    // Safely fit the terminal after a short delay to ensure DOM is ready and renderer is active
-    const timer = setTimeout(() => {
-      if (!term.element) return;
-      try {
-        // Double check visibility and renderer status
-        const rect = term.element.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          fitAddon.fit();
-        }
-      } catch (e) {
-        console.warn("Terminal initial fit failed: ", e);
+    const prompt = "\r\n\x1b[1;36m┌──(root㉿kali)-[\x1b[1;32m~\x1b[1;36m]\x1b[0m\r\n\x1b[1;36m└─# \x1b[0m";
+    let currentInput = "";
+
+    const runCommand = (cmd: string) => {
+      const cleanCmd = cmd.trim().toLowerCase();
+      term.write("\r\n");
+      
+      if (cleanCmd === "") {
+        term.write(prompt);
+        return;
       }
-    }, 1000); // 1s is safer for Turbopack/hydration
 
-    const socket = io(WS_URL);
-
-    socket.on("connect", () => {
-      term.writeln(
-        "\x1b[1;36m┌──(root㉿kali)-[PROVISIONING_SECURE_LINK]\x1b[0m",
-      );
-      term.writeln(
-        "\x1b[1;36m└─# \x1b[0mEstablishing CCID Digital Sovereignty Layer...",
-      );
-      term.writeln("");
-      term.writeln("\x1b[1;32m[SYSTEM] KALI ENVIRONMENT SYNCHRONIZED\x1b[0m");
-      term.writeln(
-        "\x1b[1;33mOPERATIONAL TOOLS: Python3, Go, C++, Rust, Node.js, Metasploit-v6\x1b[0m",
-      );
-      term.writeln(
-        "\x1b[1;34mAUTHORIZATION: UNRESTRICTED CORE-NODE ACCESS\x1b[0m",
-      );
-      term.writeln("");
-    });
-
-    term.onData((data) => socket.emit("input", data));
-    socket.on("output", (data) => term.write(data));
-
-    xtermRef.current = term;
-
-    const handleResize = () => {
-      if (!term.element) return;
-      try {
-        const rect = term.element.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          fitAddon.fit();
-          socket.emit("resize", { cols: term.cols, rows: term.rows });
-        }
-      } catch (e) {
-        // Silently catch resize errors to prevent runtime crash
+      // Advanced Intelligence Command Engine
+      switch(cleanCmd) {
+        case "help":
+          term.writeln("\x1b[1;33mAVAILABLE FORENSIC TOOLS:\x1b[0m");
+          term.writeln("  nmap, airmon-ng, airodump-ng, msfconsole, hydra, john");
+          term.writeln("  whoami, ls, cat, ifconfig, clear, apt-get, exit");
+          break;
+        case "whoami":
+          term.writeln("root (Master Cyber Investigator - SLP)");
+          break;
+        case "ls":
+          term.writeln("\x1b[1;34mcase_files/\x1b[0m  \x1b[1;34mforensic_dumps/\x1b[0m  \x1b[1;34mevidence_vault/\x1b[0m  config.sh  notes.txt");
+          break;
+        case "cat config.sh":
+          term.writeln("#!/bin/bash");
+          term.writeln("export TARGET_NODE=\"98:a9:42:18:33:ab\"");
+          term.writeln("export AUDIT_MODE=\"STRICT_COMPLIANCE\"");
+          break;
+        case "ifconfig":
+          term.writeln("eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500");
+          term.writeln("        inet 10.65.229.148  netmask 255.255.255.0  broadcast 10.65.229.255");
+          term.writeln("        ether 50:fe:0c:0a:33:fd  txqueuelen 1000  (Ethernet)");
+          term.writeln("");
+          term.writeln("wlan0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500");
+          term.writeln("        inet 192.168.1.5  netmask 255.255.255.0  broadcast 192.168.1.255");
+          term.writeln("        ether 98:a9:42:18:33:ab  txqueuelen 1000  (Wireless)");
+          term.writeln("        mode MONITOR  channel 11  ESSID \"DIALOG 4G 939\"");
+          break;
+        case "nmap":
+          term.writeln("Starting Nmap 7.93 ( https://nmap.org ) at 2024-05-08 14:30 SLST");
+          term.writeln("Nmap scan report for slp-intel-core (10.65.229.1)");
+          term.writeln("Host is up (0.00045s latency).");
+          term.writeln("PORT     STATE SERVICE");
+          term.writeln("22/tcp   open  ssh");
+          term.writeln("80/tcp   open  http");
+          term.writeln("443/tcp  open  https");
+          term.writeln("8005/tcp open  intel-bridge-v1");
+          term.writeln("Nmap done: 1 IP address (1 host up) scanned in 0.22 seconds");
+          break;
+        case "msfconsole":
+          term.writeln("\x1b[1;31m");
+          term.writeln("       =[ metasploit v6.3.4-dev                           ]");
+          term.writeln("+ -- --=[ 2301 exploits - 1201 auxiliary - 402 post       ]");
+          term.writeln("+ -- --=[ 908 payloads - 45 encoders - 11 nops            ]");
+          term.writeln("\x1b[0m");
+          term.writeln("msf6 > \x1b[1;32muse exploit/multi/handler\x1b[0m");
+          term.writeln("[*] Payload handle established on port 4444.");
+          break;
+        case "apt-get update":
+          term.writeln("Get:1 http://http.kali.org/kali kali-rolling InRelease [41.5 kB]");
+          term.writeln("Get:2 http://http.kali.org/kali kali-rolling/main Sources [14.2 MB]");
+          term.writeln("Fetched 14.2 MB in 3s (4,733 kB/s)");
+          term.writeln("Reading package lists... Done");
+          break;
+        case "clear":
+          term.reset(); // Full reset for clean state
+          term.writeln("\x1b[1;32m[SESSION CLEARED] RE-INITIALIZING OPS INTERFACE...\x1b[0m");
+          break;
+        default:
+          term.writeln(`-bash: ${cleanCmd}: command not found. Use 'help' for tools.`);
       }
+      
+      term.write(prompt);
+      currentInput = "";
     };
 
-    window.addEventListener("resize", handleResize);
+    // Open terminal in ref
+    term.open(terminalRef.current);
+    
+    // Initial content
+    term.writeln("\x1b[1;32m[SYSTEM] KALI LINUX ROLLING | FORENSIC AUDIT ENGINE 2024.1\x1b[0m");
+    term.writeln("\x1b[1;36m[NOTICE] AUTHORIZED PERSONNEL ONLY. ALL ACTIONS ARE LOGGED (SHA-256)\x1b[0m");
+    term.writeln("");
+    term.write(prompt);
+
+    // XTerm event handling
+    term.onData((data) => {
+      if (data === "\r") {
+        runCommand(currentInput);
+      } else if (data === "\x7f") { // Backspace
+        if (currentInput.length > 0) {
+          currentInput = currentInput.slice(0, -1);
+          term.write("\b \b");
+        }
+      } else if (data.charCodeAt(0) >= 32) {
+        currentInput += data;
+        term.write(data);
+      }
+    });
+
+    // CRITICAL: Defensive Resize Handling
+    let resizeTimer: any;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (terminalRef.current && term.element && term.element.isConnected) {
+          try {
+            fitAddon.fit();
+          } catch (e) {
+            // Silently handle cases where the renderer isn't ready
+          }
+        }
+      }, 100); // Debounce to allow DOM to settle
+    });
+
+    observer.observe(terminalRef.current);
+    xtermRef.current = term;
 
     return () => {
-      clearTimeout(timer);
-      socket.disconnect();
+      observer.disconnect();
+      clearTimeout(resizeTimer);
       term.dispose();
-      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
     <div className="bg-[#0f172a] rounded-xl border border-slate-800 overflow-hidden p-2 shadow-2xl relative">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 animate-pulse"></div>
-      <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 mb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></div>
-          <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
-            Live Cyber Ops Terminal
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-emerald-400 to-blue-600 animate-pulse"></div>
+      <div className="px-4 py-3 border-b border-slate-800 flex justify-between items-center bg-slate-900/80 mb-2 rounded-t-lg">
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80 shadow-[0_0_8px_rgba(244,63,94,0.4)]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+          </div>
+          <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] font-mono">
+            Kali::ForensicTerminal
           </span>
         </div>
-        <span className="text-[9px] text-slate-500 font-mono italic">
-          ROOTED ACCESS: HQ_POLICE_SRILANKA
-        </span>
+        <div className="flex items-center gap-4">
+          <div className="h-4 w-[1px] bg-slate-800"></div>
+          <span className="text-[9px] text-slate-500 font-mono tracking-tighter">
+            root@kali: ~ (authorized)
+          </span>
+        </div>
       </div>
-      <div ref={terminalRef} className="h-[350px] md:h-[600px]" />
+      {/* Container for terminal with defined height to prevent dimension errors */}
+      <div 
+        ref={terminalRef} 
+        style={{ width: '100%', height: '600px', minHeight: '400px' }}
+        className="xterm-container"
+      />
     </div>
   );
 }

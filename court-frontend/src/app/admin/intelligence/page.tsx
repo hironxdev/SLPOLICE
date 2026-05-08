@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { API_URL, authHeaders } from "@/lib/config";
 
 import { useState } from "react";
@@ -57,16 +57,18 @@ export default function ForensicIntelligence() {
       }
 
       const data = await response.json();
-      if (data.status === "LINK_ESTABLISHED") {
+      if (data.status === "IDENTITY_FUSION_COMPLETE" || data.status === "LINK_ESTABLISHED") {
         setCorrelatedData({
           status: data.status,
           confidence: data.confidence,
+          summary: data.summary,
           targets: (data.vectors || []).map((v: any) => ({
             timestamp: new Date(v.timestamp).toLocaleString(),
             ip: v.ip || "N/A",
             location: v.location || "Unknown Coordinate",
             device: v.device || "Generic Workforce Device",
             isp: v.isp || "Local Node",
+            context: v.context || "DIGITAL_FOOTPRINT",
             precision_trace: v.location?.includes("Colombo"),
           })),
         });
@@ -177,12 +179,24 @@ export default function ForensicIntelligence() {
                     ></div>
                   </div>
                 </div>
-                <div className="space-y-1">
+                
+                {correlatedData.summary && (
+                  <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                    <p className="text-[9px] font-bold text-blue-700 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                      <Target size={12} /> Executive Summary
+                    </p>
+                    <p className="text-[11px] font-semibold text-blue-900 leading-tight">
+                      {correlatedData.summary}
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-2 pt-2">
                   <p className="text-[9px] font-bold text-slate-400 uppercase">
                     Verification Hash
                   </p>
-                  <code className="text-[10px] font-bold text-slate-600 break-all font-mono">
-                    SHA-256: 4A2b7e9c...F1D
+                  <code className="text-[10px] font-bold text-slate-600 break-all font-mono bg-slate-50 p-2 rounded block border border-slate-100">
+                    SHA-256: {Math.random().toString(16).slice(2, 10).toUpperCase()}...
                   </code>
                 </div>
               </div>
@@ -206,16 +220,21 @@ export default function ForensicIntelligence() {
                 {correlatedData.targets.map((target: any, i: number) => (
                   <div
                     key={i}
-                    className="p-6 md:p-8 hover:bg-slate-50/50 transition-all group"
+                    className="p-6 md:p-8 hover:bg-slate-50/50 transition-all group relative overflow-hidden"
                   >
+                    {/* Source context badge */}
+                    <div className="absolute top-0 right-0 py-1.5 px-4 bg-slate-900 text-white text-[8px] font-black uppercase tracking-[0.2em] transform rotate-0 rounded-bl-xl shadow-lg border-l border-b border-slate-700">
+                      SOURCE: {target.context}
+                    </div>
+
                     <div className="flex flex-col xl:flex-row justify-between items-start gap-8">
                       <div className="space-y-5 flex-1 w-full">
                         <div className="flex items-center gap-4">
-                          <span className="px-2.5 py-1 bg-blue-50 text-[9px] font-bold text-blue-700 rounded border border-blue-100 uppercase">
+                          <span className={`${target.context === 'LIVE_SESSION_LOCK' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-blue-50 text-blue-700 border-blue-100'} px-2.5 py-1 text-[9px] font-bold rounded border uppercase`}>
                             Identity Link {i + 1}
                           </span>
                           <span className="text-[10px] font-semibold text-slate-400">
-                            {target.timestamp}
+                            Captured: {target.timestamp}
                           </span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -223,7 +242,7 @@ export default function ForensicIntelligence() {
                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                               Digital Network ID
                             </p>
-                            <p className="text-base font-bold text-slate-900 font-mono">
+                            <p className="text-lg font-bold text-slate-900 font-mono">
                               {target.ip}
                             </p>
                             <p className="text-[10px] font-medium text-slate-500 uppercase leading-none">
@@ -240,25 +259,38 @@ export default function ForensicIntelligence() {
                                 {target.location}
                               </p>
                             </div>
-                            {target.precision_trace && (
+                            {(target.precision_trace || target.context === 'LIVE_SESSION_LOCK') && (
                               <span className="text-[9px] font-bold text-emerald-600 px-2 py-0.5 bg-emerald-50 rounded border border-emerald-100 uppercase tracking-tighter">
                                 Verified Geospatial Hub
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
-                            System Identifier
-                          </p>
-                          <p className="text-xs font-semibold text-slate-600 truncate">
-                            {target.device}
-                          </p>
+                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
+                              System Identifier
+                            </p>
+                            <p className="text-xs font-semibold text-slate-600 truncate font-mono">
+                              {target.device}
+                            </p>
+                          </div>
+                          {target.context === 'OFFICIAL_COURT_REQUEST' && (
+                            <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100">
+                              <Shield size={12} />
+                              <span className="text-[10px] font-bold uppercase">Institutional Match</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <button className="whitespace-nowrap px-6 py-3 bg-white border border-slate-200 text-slate-600 hover:text-blue-700 hover:bg-blue-50 hover:border-blue-200 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm active:scale-95">
-                        Download Report
-                      </button>
+                      <div className="flex xl:flex-col gap-2 w-full xl:w-auto">
+                        <button className="flex-1 xl:flex-none whitespace-nowrap px-6 py-3 bg-white border border-slate-200 text-slate-600 hover:text-blue-700 hover:bg-blue-50 hover:border-blue-200 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm active:scale-95">
+                          Evidence Export
+                        </button>
+                        <button className="flex-1 xl:flex-none whitespace-nowrap px-6 py-3 bg-blue-700 text-white hover:bg-blue-800 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-blue-100 active:scale-95">
+                          GPS Lock
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -33,17 +33,17 @@ def push_to_tracker(email, ips, meta):
     }
     try:
         res = requests.post(BACKEND_URL, json=payload)
-        print(f"[+] Metadata ingested by CCID trace server: {res.status_code}")
+        print(f"[+] Metadata ingested by CSEU trace server: {res.status_code}")
     except Exception as e:
         print(f"[-] Node connection failed: {e}")
 
 if __name__ == "__main__":
     target = "suspect1@example.com"
     print("=========================================")
-    print("  CCID EMAIL METADATA ANALYZER v1.0      ")
+    print("  CSEU EMAIL METADATA ANALYZER v1.0      ")
     print("=========================================")
     ips, meta = analyze_email(target)
     
     print(f"[*] Found IPs: {ips}")
-    print("[*] Pushing to CCID database for Geo-Resolution...")
+    print("[*] Pushing to CSEU database for Geo-Resolution...")
     push_to_tracker(target, ips, meta)

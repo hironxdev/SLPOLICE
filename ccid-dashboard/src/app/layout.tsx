@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CCID Command Center",
+  title: "CSEU Command Center",
   description:
-    "CCID administrative dashboard for forensic intelligence, target tracking, and email geo-trace operations.",
+    "CSEU administrative dashboard for forensic intelligence, target tracking, and email geo-trace operations.",
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",

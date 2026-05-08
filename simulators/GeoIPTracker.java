@@ -8,7 +8,7 @@ public class GeoIPTracker {
     private static final String TARGET_EMAIL = "suspect1@example.com";
     
     public static void main(String[] args) {
-        System.out.println("Starting CCID Geo-IP Resolution Service (Java Agent)...");
+        System.out.println("Starting CSEU Geo-IP Resolution Service (Java Agent)...");
         Random rand = new Random();
         
         while (true) {

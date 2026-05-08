@@ -63,19 +63,19 @@ export default function Home() {
 
   const t = {
     si: {
-      title: "ශ්‍රී ලංකා පොලිස් CCID",
+      title: "ශ්‍රී ලංකා පොලිස් CSEU",
       division: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය",
       applyBtn: "සෘජුව ඉදිරිපත් කරන්න",
       loginBtn: "නිලධාරී පිවිසුම",
     },
     en: {
-      title: "SRI LANKA POLICE CCID",
+      title: "OPENBIRD CYBER SECURITY ENGINNERING CSEU",
       division: "Computer Crime Investigation Division",
       applyBtn: "Submit Case Now",
       loginBtn: "Staff Portal Login",
     },
     ta: {
-      title: "இலங்கை பொலிஸ் CCID",
+      title: "இலங்கை பொலிஸ் CSEU",
       division: "கணினி குற்றப் புலனாய்வுப் பிரிவு",
       applyBtn: "இப்பவே சமர்ப்பிக்கவும்",
       loginBtn: "அதிகாரி உள்நுழைவு",
@@ -191,12 +191,12 @@ export default function Home() {
             <Link href="/" className="flex items-center gap-3">
               <img
                 src="/logo.png"
-                alt="CCID Logo"
+                alt="CSEU Logo"
                 className={`${isScrolled ? "h-12" : "h-16"} transition-all`}
               />
               <div className="border-l border-[#002147]/10 pl-3">
                 <h1 className="text-xl font-black text-[#002147] tracking-tighter uppercase leading-none">
-                  SL POLICE <span className="text-[#f27024]">CCID</span>
+                  SL POLICE <span className="text-[#f27024]">CSEU</span>
                 </h1>
                 <p className="text-[8px] font-bold text-[#64748b] tracking-[0.2em] uppercase mt-0.5">
                   EST. 1866 • CYBER UNIT
@@ -419,12 +419,13 @@ export default function Home() {
             <div className="space-y-6">
               <img
                 src="/logo.png"
-                alt="CCID"
+                alt="CSEU"
                 className="h-16 grayscale opacity-80"
               />
               <p className="text-[11px] font-bold text-slate-400 leading-relaxed uppercase pr-10">
-                Official Digital Sovereign Gateway for the Sri Lanka Police
-                Computer Crime Investigation Division. EST 1866.
+                Official Digital Sovereign Gateway for the Openbird Cyber
+                Security Enginnering Computer Crime Investigation Division. EST
+                1866.
               </p>
               <div className="flex gap-4">
                 <Facebook className="p-2 w-8 h-8 bg-slate-200 text-[#002147] rounded hover:bg-[#f27024] hover:text-white transition-all cursor-pointer" />
@@ -498,7 +499,7 @@ export default function Home() {
 
           <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-slate-100 pt-12">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              © 2026 SRI LANKA POLICE • CCID OFFICIAL PORTAL
+              © 2026 OPENBIRD CYBER SECURITY ENGINNERING • CSEU OFFICIAL PORTAL
             </p>
             <div className="flex gap-10 text-[9px] font-black text-[#002147] uppercase tracking-widest">
               <span className="hover:text-[#f27024] cursor-pointer">

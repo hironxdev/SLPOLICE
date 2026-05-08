@@ -23,7 +23,7 @@ async function seedAdmin() {
     const password_hash = await bcrypt.hash(password, salt);
 
     const newAdmin = new User({
-      name: "CCID Administrator",
+      name: "CSEU Administrator",
       email,
       password_hash,
       nic,

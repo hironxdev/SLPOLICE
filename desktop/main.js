@@ -6,7 +6,7 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    title: "CCID Cyber Intelligence Suite",
+    title: "CSEU Cyber Intelligence Suite",
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,

@@ -8,7 +8,7 @@ public class DeviceTracker {
     private static final String IMEI = "359881030310000";
     
     public static void main(String[] args) {
-        System.out.println("Starting CCID Device Tracking Simulator (Java Agent)...");
+        System.out.println("Starting CSEU Device Tracking Simulator (Java Agent)...");
         Random rand = new Random();
         double baseLat = 6.9271; // Colombo, Sri Lanka
         double baseLon = 79.8612;

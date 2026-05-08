@@ -1,4 +1,4 @@
--- PostgreSQL Schema for CCID Legal Submission System
+-- PostgreSQL Schema for CSEU Legal Submission System
 
 -- Enable UUID extension if not present
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

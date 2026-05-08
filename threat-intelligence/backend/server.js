@@ -53,7 +53,7 @@ function generateRandomIP() {
 }
 
 /**
- * 🧪 CCID CYBER ATTACK SIMULATOR
+ * 🧪 CSEU CYBER ATTACK SIMULATOR
  */
 function simulateAttack() {
   const source = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)];
@@ -108,5 +108,5 @@ app.get("/api/stats/sri-lanka", (req, res) => {
 
 const PORT = 5050;
 httpServer.listen(PORT, () => {
-  console.log(`🛡️ CCID Threat Intel Backend running on port ${PORT}`);
+  console.log(`🛡️ CSEU Threat Intel Backend running on port ${PORT}`);
 });

@@ -1,7 +1,7 @@
 {
   "name": "ccid-management-portal-root",
   "version": "1.0.0",
-  "description": "Orchestrator for CCID Suite, Court Portal, and SLIIT Vacancy System",
+  "description": "Orchestrator for CSEU Suite, Court Portal, and SLIIT Vacancy System",
   "scripts": {
     "dev": "npx concurrently \"npm:dev:main-*\" \"npm:dev:court-*\"",
     "dev:main-backend": "cd backend && node --watch server.js",

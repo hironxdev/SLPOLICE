@@ -12,7 +12,7 @@ import {
 
 const CONTENT = {
   en: {
-    title: "CCID - Legal Submission Portal",
+    title: "CSEU - Legal Submission Portal",
     subtitle: "Court Notice Explanation Form",
     govSrv: "GOVERNMENT OF SRI LANKA OFFICIAL SERVICES",
     disclaimerTitle: "Legal Disclaimer & Consent",
@@ -43,7 +43,7 @@ const CONTENT = {
     phonePri: "Primary Phone Number",
     phoneSec: "Secondary Phone Number (Optional)",
     consent:
-      "I certify that the information provided is true and understand legal consequences of false statements. I understand that this information will be used for CCID legal processing.",
+      "I certify that the information provided is true and understand legal consequences of false statements. I understand that this information will be used for CSEU legal processing.",
     submitBtn: "Submit Explanation",
     processing: "Processing...",
     secure: "SECURE SUBMISSION CHANNEL",
@@ -54,7 +54,7 @@ const CONTENT = {
     home: "Home",
   },
   si: {
-    title: "CCID - නෛතික ඉදිරිපත් කිරීමේ ද්වාරය",
+    title: "CSEU - නෛතික ඉදිරිපත් කිරීමේ ද්වාරය",
     subtitle: "අධිකරණ නියෝග පැහැදිලි කිරීමේ පෝරමය",
     govSrv: "ශ්‍රී ලංකා රජයේ නිල සේවාවන්",
     disclaimerTitle: "නෛතික වියාචනය සහ කැමැත්ත",
@@ -85,7 +85,7 @@ const CONTENT = {
     phonePri: "ප්‍රධාන දුරකථන අංකය",
     phoneSec: "ද්විතීයික දුරකථන අංකය (විකල්ප)",
     consent:
-      "ලබා දී ඇති තොරතුරු සත්‍ය බව මම සහතික කරන අතර අසත්‍ය ප්‍රකාශවල නීතිමය ප්‍රතිවිපාක තේරුම් ගනිමි. මෙම තොරතුරු CCID නෛතික සැකසුම් සඳහා භාවිතා කරන බව මම තේරුම් ගනිමි.",
+      "ලබා දී ඇති තොරතුරු සත්‍ය බව මම සහතික කරන අතර අසත්‍ය ප්‍රකාශවල නීතිමය ප්‍රතිවිපාක තේරුම් ගනිමි. මෙම තොරතුරු CSEU නෛතික සැකසුම් සඳහා භාවිතා කරන බව මම තේරුම් ගනිමි.",
     submitBtn: "පැහැදිලි කිරීම ඉදිරිපත් කරන්න",
     processing: "සැකසෙමින් පවතී...",
     secure: "ආරක්ෂිත ඉදිරිපත් කිරීමේ නාලිකාව",
@@ -96,7 +96,7 @@ const CONTENT = {
     home: "මුල් පිටුව",
   },
   ta: {
-    title: "CCID - சட்ட சமர்ப்பிப்பு போர்டல்",
+    title: "CSEU - சட்ட சமர்ப்பிப்பு போர்டல்",
     subtitle: "நீதிமன்ற அறிவிப்பு விளக்கப் படிவம்",
     govSrv: "இலங்கை அரசாங்கத்தின் உத்தியோகபூர்வ சேவைகள்",
     disclaimerTitle: "சட்ட மறுப்பு மற்றும் ஒப்புதல்",
@@ -127,7 +127,7 @@ const CONTENT = {
     phonePri: "முதன்மை தொலைபேசி எண்",
     phoneSec: "இரண்டாம் நிலை தொலைபேசி எண் (விருப்பத்தேர்வு)",
     consent:
-      "வழங்கப்பட்ட தகவல்கள் உண்மையானவை என்பதை நான் உறுதிப்படுத்துகிறேன் மற்றும் தவறான அறிக்கைகளின் சட்ட விளைவுகளைப் புரிந்துகொள்கிறேன். இந்தத் தகவல் CCID சட்டச் செயலாக்கத்திற்காகப் பயன்படுத்தப்படும் என்பதை நான் புரிந்துகொள்கிறேன்.",
+      "வழங்கப்பட்ட தகவல்கள் உண்மையானவை என்பதை நான் உறுதிப்படுத்துகிறேன் மற்றும் தவறான அறிக்கைகளின் சட்ட விளைவுகளைப் புரிந்துகொள்கிறேன். இந்தத் தகவல் CSEU சட்டச் செயலாக்கத்திற்காகப் பயன்படுத்தப்படும் என்பதை நான் புரிந்துகொள்கிறேன்.",
     submitBtn: "விளக்கத்தைச் சமர்ப்பிக்கவும்",
     processing: "செயலாக்கப்படுகிறது...",
     secure: "பாதுகாப்பான சமர்ப்பிப்பு சேனல்",
@@ -659,7 +659,7 @@ export default function SubmitRequest() {
         </form>
 
         <footer className="mt-16 text-center text-[10px] text-[#94a3b8] font-bold uppercase tracking-[0.3em] space-y-3">
-          <p>© 2026 CCID | INTERNAL LEGAL DIVISION</p>
+          <p>© 2026 CSEU | INTERNAL LEGAL DIVISION</p>
           <p className="opacity-50">
             PROTECTED BY GOVERNMENT SECURE LINK STANDARDS
           </p>

@@ -11,7 +11,7 @@ async function seedAdmin() {
     email: email,
     password: password,
     email_confirm: true,
-    user_metadata: { name: "CCID Administrator" }
+    user_metadata: { name: "CSEU Administrator" }
   });
 
   if (error) {
@@ -39,7 +39,7 @@ async function updateDatabaseRole(userId, email) {
   const { data, error } = await supabase.from('users').upsert({
     id: userId,
     email: email,
-    name: "CCID Administrator",
+    name: "CSEU Administrator",
     nic: "ADMIN_ROOT_001",
     role: "admin"
   });

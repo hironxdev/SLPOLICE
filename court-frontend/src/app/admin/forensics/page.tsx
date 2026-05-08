@@ -161,7 +161,7 @@ export default function DigitalEvidenceCollection() {
             Intelligence
           </h2>
           <p className="text-sm text-slate-500 font-medium">
-            CCID Cyber-Crime Investigation & Social Media Surveillance
+            CSEU Cyber-Crime Investigation & Social Media Surveillance
           </p>
         </div>
         <div className="bg-slate-100 p-1.5 rounded-xl border border-slate-200 flex">
@@ -184,7 +184,7 @@ export default function DigitalEvidenceCollection() {
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-700">
               <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-4">
-                  <Briefcase className="w-4 h-4 text-blue-700" /> Active CCID
+                  <Briefcase className="w-4 h-4 text-blue-700" /> Active CSEU
                   Investigation Files
                 </h3>
                 <button
@@ -470,27 +470,57 @@ export default function DigitalEvidenceCollection() {
                   <div className="bg-slate-900 mx-8 mb-8 p-6 rounded-xl border border-slate-800 space-y-3 font-mono text-[10px]">
                     <div className="flex justify-between items-center bg-white/5 p-2 rounded border border-white/10 mb-4">
                       <div className="flex flex-col gap-1">
-                        <span className="text-[8px] text-slate-500 uppercase font-black">Node Correlation</span>
-                        <span className="text-blue-400 font-black tracking-widest">{evidence[0].dossier?.correlated_node_id}</span>
+                        <span className="text-[8px] text-slate-500 uppercase font-black">
+                          Node Correlation
+                        </span>
+                        <span className="text-blue-400 font-black tracking-widest">
+                          {evidence[0].dossier?.correlated_node_id}
+                        </span>
                       </div>
                       <div className="flex flex-col items-end gap-1">
-                        <span className="text-[8px] text-slate-500 uppercase font-black">Trust Integrity</span>
-                        <span className="text-emerald-400 font-black tracking-widest">{evidence[0].dossier?.trust_score}</span>
+                        <span className="text-[8px] text-slate-500 uppercase font-black">
+                          Trust Integrity
+                        </span>
+                        <span className="text-emerald-400 font-black tracking-widest">
+                          {evidence[0].dossier?.trust_score}
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2 opacity-90">
-                      { (evidence[0].dossier?.analysis_log || []).map((log: string, idx: number) => (
-                        <div key={idx} className="flex gap-3 items-start group">
-                          <span className="text-slate-600 shrink-0 font-bold">[{new Date(evidence[0].timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}]</span>
-                          <p className={`leading-relaxed ${idx === (evidence[0].dossier?.analysis_log?.length - 1) ? 'text-blue-400 font-bold' : 'text-slate-300'}`}>
-                            {log}
-                            {idx === (evidence[0].dossier?.analysis_log?.length - 1) && <span className="inline-block w-1.5 h-3.5 bg-blue-400 ml-2 animate-pulse"></span>}
-                          </p>
-                        </div>
-                      ))}
+                      {(evidence[0].dossier?.analysis_log || []).map(
+                        (log: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex gap-3 items-start group"
+                          >
+                            <span className="text-slate-600 shrink-0 font-bold">
+                              [
+                              {new Date(
+                                evidence[0].timestamp,
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                second: "2-digit",
+                              })}
+                              ]
+                            </span>
+                            <p
+                              className={`leading-relaxed ${idx === evidence[0].dossier?.analysis_log?.length - 1 ? "text-blue-400 font-bold" : "text-slate-300"}`}
+                            >
+                              {log}
+                              {idx ===
+                                evidence[0].dossier?.analysis_log?.length -
+                                  1 && (
+                                <span className="inline-block w-1.5 h-3.5 bg-blue-400 ml-2 animate-pulse"></span>
+                              )}
+                            </p>
+                          </div>
+                        ),
+                      )}
                       <p className="text-emerald-400 font-black mt-2 tracking-widest uppercase text-[8px] animate-pulse">
-                          &gt;&gt;&gt; OSINT HANDSHAKE COMPLETE. TARGET ASSETS ARCHIVED TO VAULT.
+                        &gt;&gt;&gt; OSINT HANDSHAKE COMPLETE. TARGET ASSETS
+                        ARCHIVED TO VAULT.
                       </p>
                     </div>
                   </div>

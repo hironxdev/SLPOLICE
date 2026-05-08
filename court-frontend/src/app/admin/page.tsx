@@ -83,7 +83,7 @@ export default function AdminLogin() {
             <ShieldAlert className="w-10 h-10 text-blue-700" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            CCID Admin Portal
+            CSEU Admin Portal
           </h1>
           <p className="text-slate-500 text-xs font-semibold mt-2 uppercase tracking-widest">
             Official Access • Authorized Personnel Only

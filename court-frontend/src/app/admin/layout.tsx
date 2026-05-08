@@ -7,13 +7,9 @@ import {
   ShieldAlert,
   Database,
   Network,
-  FileSearch,
   Terminal,
-  Settings,
   Radar,
-  Zap,
   Activity,
-  History,
   ShieldCheck,
   ChevronLeft,
   ChevronRight,
@@ -23,9 +19,18 @@ import {
   Fingerprint,
   Wifi,
   Signal,
+  Shield,
+  Globe,
+  Key,
+  HardDrive,
+  Code,
+  FileBarChart,
+  ScanSearch,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import NotificationCenter from "@/components/NotificationCenter";
 
 export default function AdminLayout({
   children,
@@ -122,6 +127,43 @@ export default function AdminLayout({
       path: "/admin/logs",
       category: "SYSTEM",
     },
+    // ── SECURITY COMMAND CENTER ──
+    {
+      title: "Security Dashboard",
+      icon: <ShieldCheck size={20} />,
+      path: "/admin/security/dashboard",
+      category: "SECURITY",
+    },
+    {
+      title: "Web Security Lab",
+      icon: <Globe size={20} />,
+      path: "/admin/security/websec",
+      category: "SECURITY",
+    },
+    {
+      title: "Network & Wireless",
+      icon: <Wifi size={20} />,
+      path: "/admin/security/network",
+      category: "SECURITY",
+    },
+    {
+      title: "Vulnerability Scan",
+      icon: <ShieldAlert size={20} />,
+      path: "/admin/security/vulns",
+      category: "SECURITY",
+    },
+    {
+      title: "Audit Logs",
+      icon: <FileBarChart size={20} />,
+      path: "/admin/security/audit",
+      category: "SECURITY",
+    },
+    {
+      title: "Knowledge Hub",
+      icon: <BookOpen size={20} />,
+      path: "/admin/security/kb",
+      category: "SECURITY",
+    },
   ];
 
   const handleLogout = () => {
@@ -131,43 +173,45 @@ export default function AdminLayout({
 
   const NavContent = () => (
     <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-7">
-      {["CORE", "INTELLIGENCE", "OPERATIONS", "SYSTEM"].map((cat) => (
-        <div key={cat} className="space-y-2">
-          {(isSidebarOpen || isMobileMenuOpen) && (
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-1">
-              {cat}
-            </p>
-          )}
-          <div className="space-y-0.5">
-            {modules
-              .filter((m) => m.category === cat)
-              .map((m) => (
-                <Link
-                  key={m.path}
-                  href={m.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group relative ${
-                    pathname === m.path
-                      ? "bg-blue-50 text-blue-700 font-semibold"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                  }`}
-                >
-                  <div
-                    className={`${pathname === m.path ? "text-blue-700" : "text-slate-400 group-hover:text-slate-600"}`}
+      {["CORE", "INTELLIGENCE", "OPERATIONS", "SYSTEM", "SECURITY"].map(
+        (cat) => (
+          <div key={cat} className="space-y-2">
+            {(isSidebarOpen || isMobileMenuOpen) && (
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-4 mb-1">
+                {cat}
+              </p>
+            )}
+            <div className="space-y-0.5">
+              {modules
+                .filter((m) => m.category === cat)
+                .map((m) => (
+                  <Link
+                    key={m.path}
+                    href={m.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group relative ${
+                      pathname === m.path
+                        ? "bg-blue-50 text-blue-700 font-semibold"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
                   >
-                    {m.icon}
-                  </div>
-                  {(isSidebarOpen || isMobileMenuOpen) && (
-                    <span className="text-sm">{m.title}</span>
-                  )}
-                  {pathname === m.path && (
-                    <div className="absolute left-0 top-2 bottom-2 w-1 bg-blue-700 rounded-r-full"></div>
-                  )}
-                </Link>
-              ))}
+                    <div
+                      className={`${pathname === m.path ? "text-blue-700" : "text-slate-400 group-hover:text-slate-600"}`}
+                    >
+                      {m.icon}
+                    </div>
+                    {(isSidebarOpen || isMobileMenuOpen) && (
+                      <span className="text-sm">{m.title}</span>
+                    )}
+                    {pathname === m.path && (
+                      <div className="absolute left-0 top-2 bottom-2 w-1 bg-blue-700 rounded-r-full"></div>
+                    )}
+                  </Link>
+                ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ),
+      )}
     </nav>
   );
 
@@ -192,10 +236,10 @@ export default function AdminLayout({
           {isSidebarOpen && (
             <div className="animate-in fade-in slide-in-from-left duration-300">
               <h1 className="text-sm font-bold text-slate-900 tracking-tight">
-                CCID Intelligence
+                CSEU Intelligence
               </h1>
               <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-                Sri Lanka Police
+                Openbird Cyber Security Enginnering
               </p>
             </div>
           )}
@@ -231,7 +275,7 @@ export default function AdminLayout({
             <ShieldCheck className="w-8 h-8 text-blue-700" />
             <div>
               <h1 className="text-sm font-bold text-slate-900 tracking-tight">
-                CCID Intel
+                CSEU Intel
               </h1>
               <p className="text-[9px] font-medium text-slate-500 uppercase">
                 Police HQ
@@ -279,7 +323,7 @@ export default function AdminLayout({
             {/* Mobile Small Branding */}
             <div className="flex items-center gap-2 sm:hidden">
               <ShieldCheck className="w-6 h-6 text-blue-700" />
-              <span className="text-sm font-bold text-slate-800">CCID</span>
+              <span className="text-sm font-bold text-slate-800">CSEU</span>
             </div>
           </div>
 
@@ -291,10 +335,7 @@ export default function AdminLayout({
               </span>
             </div>
 
-            <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all">
-              <Bell className="w-[18px] h-[18px] md:w-[20px] md:h-[20px]" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-rose-500 rounded-full border-2 border-white"></div>
-            </button>
+            <NotificationCenter />
 
             <div className="flex items-center gap-2 md:gap-3 pl-2">
               <div className="w-8 h-8 md:w-9 md:h-9 bg-blue-700 rounded-full flex items-center justify-center text-white font-bold text-[10px] md:text-xs shadow-md shadow-blue-200">

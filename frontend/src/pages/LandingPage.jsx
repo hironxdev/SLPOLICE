@@ -4,17 +4,17 @@ import './LandingPage.css';
 
 const CONTENT = {
   en: {
-    police: "Sri Lanka Police",
+    police: "Openbird Cyber Security Enginnering",
     division: "Computer Crime Investigation Division",
     login: "Portal Login",
-    whatIs: "What is CCID?",
-    heroText: "The Computer Crime Investigation Division (CCID) is a specialized unit of the Sri Lanka Police. Its core mission is to investigate crimes involving computers, digital systems, and online activity, operating strictly within legal frameworks and utilizing forensic expertise.",
+    whatIs: "What is CSEU?",
+    heroText: "The Computer Crime Investigation Division (CSEU) is a specialized unit of the Openbird Cyber Security Enginnering. Its core mission is to investigate crimes involving computers, digital systems, and online activity, operating strictly within legal frameworks and utilizing forensic expertise.",
     purpose: "Main Purpose",
-    purposeText: "CCID exists because modern crime has moved online. They handle cases where evidence is digital, crimes are committed using technology, and data needs to be traced, recovered, or analyzed legally. They act as digital forensic investigators and cybercrime detectives.",
+    purposeText: "CSEU exists because modern crime has moved online. They handle cases where evidence is digital, crimes are committed using technology, and data needs to be traced, recovered, or analyzed legally. They act as digital forensic investigators and cybercrime detectives.",
     courtNotice: "Respond to Court Notice",
     newCase: "File a New Case",
-    history: "History of CCID",
-    historyText: "The CCID was established as a specialized division to address the rapid evolution of digital threats in Sri Lanka. Originally functioning as a sub-unit, it expanded into a robust division following the enactment of the Computer Crimes Act No. 24 of 2007. Today, it stands as the vanguard against cyber-terrorism, financial fraud, and digital impersonation, equipped with advanced forensic labs and international partnerships.",
+    history: "History of CSEU",
+    historyText: "The CSEU was established as a specialized division to address the rapid evolution of digital threats in Sri Lanka. Originally functioning as a sub-unit, it expanded into a robust division following the enactment of the Computer Crimes Act No. 24 of 2007. Today, it stands as the vanguard against cyber-terrorism, financial fraud, and digital impersonation, equipped with advanced forensic labs and international partnerships.",
     cyber: "Cybercrime Investigations",
     cyberList: [
       "Social media fraud (Facebook, WhatsApp scams)",
@@ -37,21 +37,21 @@ const CONTENT = {
     ],
     warning: "Requires court orders and legal process. Not instant or accessible to the public.",
     legal: "Legal Authority",
-    legalText: "Their power comes from Sri Lankan cyber laws, court-issued warrants, and collaboration with telecom or tech companies. Without legal approval, even CCID cannot access private data.",
-    footer: "Computer Crime Investigation Division (CCID), Sri Lanka Police. All Rights Reserved."
+    legalText: "Their power comes from Sri Lankan cyber laws, court-issued warrants, and collaboration with telecom or tech companies. Without legal approval, even CSEU cannot access private data.",
+    footer: "Computer Crime Investigation Division (CSEU), Openbird Cyber Security Enginnering. All Rights Reserved."
   },
   si: {
     police: "ශ්‍රී ලංකා පොලිසිය",
     division: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය",
     login: "පද්ධතියට පිවිසෙන්න",
-    whatIs: "CCID යනු කුමක්ද?",
-    heroText: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය (CCID) යනු ශ්‍රී ලංකා පොලිසියේ විශේෂිත ඒකකයකි. එහි ප්‍රධාන මෙහෙයුම වන්නේ පරිගණක, ඩිජිටල් පද්ධති සහ අන්තර්ජාල ක්‍රියාකාරකම් සම්බන්ධ අපරාධ විමර්ශනය කිරීමයි, නීතිමය රාමුවක් තුළ දැඩි ලෙස ක්‍රියාත්මක වෙමින් සහ අධිකරණ වෛද්‍ය විශේෂඥතාව උපයෝගී කර ගනිමින්.",
+    whatIs: "CSEU යනු කුමක්ද?",
+    heroText: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය (CSEU) යනු ශ්‍රී ලංකා පොලිසියේ විශේෂිත ඒකකයකි. එහි ප්‍රධාන මෙහෙයුම වන්නේ පරිගණක, ඩිජිටල් පද්ධති සහ අන්තර්ජාල ක්‍රියාකාරකම් සම්බන්ධ අපරාධ විමර්ශනය කිරීමයි, නීතිමය රාමුවක් තුළ දැඩි ලෙස ක්‍රියාත්මක වෙමින් සහ අධිකරණ වෛද්‍ය විශේෂඥතාව උපයෝගී කර ගනිමින්.",
     purpose: "ප්‍රධාන අරමුණ",
-    purposeText: "නූතන අපරාධ අන්තර්ජාලය වෙත යොමු වී ඇති බැවින් CCID පිහිටුවා ඇත. සාක්ෂි ඩිජිටල් වන, තාක්‍ෂණය භාවිතයෙන් අපරාධ සිදු කරන සහ දත්ත සොයා ගැනීමට, ප්‍රතිසාධනය කිරීමට හෝ නීත්‍යානුකූලව විශ්ලේෂණය කිරීමට අවශ්‍ය අවස්ථාවන්හිදී ඔවුන් කටයුතු කරයි. ඔවුන් ඩිජිටල් අධිකරණ වෛද්‍ය විමර්ශකයින් සහ සයිබර් අපරාධ රහස් පරීක්ෂකයින් ලෙස ක්‍රියා කරයි.",
+    purposeText: "නූතන අපරාධ අන්තර්ජාලය වෙත යොමු වී ඇති බැවින් CSEU පිහිටුවා ඇත. සාක්ෂි ඩිජිටල් වන, තාක්‍ෂණය භාවිතයෙන් අපරාධ සිදු කරන සහ දත්ත සොයා ගැනීමට, ප්‍රතිසාධනය කිරීමට හෝ නීත්‍යානුකූලව විශ්ලේෂණය කිරීමට අවශ්‍ය අවස්ථාවන්හිදී ඔවුන් කටයුතු කරයි. ඔවුන් ඩිජිටල් අධිකරණ වෛද්‍ය විමර්ශකයින් සහ සයිබර් අපරාධ රහස් පරීක්ෂකයින් ලෙස ක්‍රියා කරයි.",
     courtNotice: "අධිකරණ නියෝගයකට ප්‍රතිචාර දක්වන්න",
     newCase: "නව පැමිණිල්ලක් ඉදිරිපත් කරන්න",
-    history: "CCID හි ඉතිහාසය",
-    historyText: "ශ්‍රී ලංකාවේ ඩිජිටල් තර්ජනවල ශීඝ්‍ර පරිණාමය ඇමතීම සඳහා විශේෂිත අංශයක් ලෙස CCID පිහිටුවන ලදී. මුලින් උප ඒකකයක් ලෙස ක්‍රියාත්මක වූ එය, 2007 අංක 24 දරන පරිගණක අපරාධ පනත බලාත්මක වීමෙන් පසුව ශක්තිමත් කොට්ඨාසයක් දක්වා ව්‍යාප්ත විය. අද වන විට එය සයිබර් ත්‍රස්තවාදය, මූල්‍ය වංචා සහ ඩිජිටල් පුද්ගල මාරු කිරීම් වලට එරෙහිව පෙරමුණ ගෙන සිටින අතර නවීන අධිකරණ වෛද්‍ය රසායනාගාර සහ ජාත්‍යන්තර හවුල්කාරිත්වයන්ගෙන් සමන්විත වේ.",
+    history: "CSEU හි ඉතිහාසය",
+    historyText: "ශ්‍රී ලංකාවේ ඩිජිටල් තර්ජනවල ශීඝ්‍ර පරිණාමය ඇමතීම සඳහා විශේෂිත අංශයක් ලෙස CSEU පිහිටුවන ලදී. මුලින් උප ඒකකයක් ලෙස ක්‍රියාත්මක වූ එය, 2007 අංක 24 දරන පරිගණක අපරාධ පනත බලාත්මක වීමෙන් පසුව ශක්තිමත් කොට්ඨාසයක් දක්වා ව්‍යාප්ත විය. අද වන විට එය සයිබර් ත්‍රස්තවාදය, මූල්‍ය වංචා සහ ඩිජිටල් පුද්ගල මාරු කිරීම් වලට එරෙහිව පෙරමුණ ගෙන සිටින අතර නවීන අධිකරණ වෛද්‍ය රසායනාගාර සහ ජාත්‍යන්තර හවුල්කාරිත්වයන්ගෙන් සමන්විත වේ.",
     cyber: "සයිබර් අපරාධ විමර්ශනය",
     cyberList: [
       "සමාජ මාධ්‍ය වංචා (Facebook, WhatsApp වංචා)",
@@ -74,8 +74,8 @@ const CONTENT = {
     ],
     warning: "උසාවි නියෝග සහ නීතිමය ක්‍රියාවලිය අවශ්‍ය වේ. මහජනයාට ක්ෂණිකව හෝ ප්‍රවේශ විය නොහැක.",
     legal: "නීතිමය අධිකාරිය",
-    legalText: "ඔවුන්ගේ බලය ලැබෙන්නේ ශ්‍රී ලාංකේය සයිබර් නීති, අධිකරණය විසින් නිකුත් කරන ලද වරෙන්තු සහ විදුලි සංදේශ හෝ තාක්ෂණික සමාගම් සමඟ සහයෝගීතාවයෙනි. නීතිමය අනුමැතියකින් තොරව, CCID හට පවා පුද්ගලික දත්ත වෙත ප්‍රවේශ විය නොහැක.",
-    footer: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය (CCID), ශ්‍රී ලංකා පොලිසිය. සියලුම හිමිකම් ඇවිරිණි."
+    legalText: "ඔවුන්ගේ බලය ලැබෙන්නේ ශ්‍රී ලාංකේය සයිබර් නීති, අධිකරණය විසින් නිකුත් කරන ලද වරෙන්තු සහ විදුලි සංදේශ හෝ තාක්ෂණික සමාගම් සමඟ සහයෝගීතාවයෙනි. නීතිමය අනුමැතියකින් තොරව, CSEU හට පවා පුද්ගලික දත්ත වෙත ප්‍රවේශ විය නොහැක.",
+    footer: "පරිගණක අපරාධ විමර්ශන කොට්ඨාසය (CSEU), ශ්‍රී ලංකා පොලිසිය. සියලුම හිමිකම් ඇවිරිණි."
   }
 };
 

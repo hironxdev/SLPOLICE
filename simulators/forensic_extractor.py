@@ -26,14 +26,14 @@ def send_to_backend(imei, data_type, content):
     }
     try:
         response = requests.post(BACKEND_URL, json=payload)
-        print(f"[+] Data ingested successfully by CCID Tracker: {response.status_code}")
+        print(f"[+] Data ingested successfully by CSEU Tracker: {response.status_code}")
     except Exception as e:
         print(f"[-] Failed to connect to backend ingestion server: {e}")
 
 if __name__ == "__main__":
     target_imei = "359881030310000"
     print("==================================================")
-    print("   CCID FORENSIC DATA EXTRACTION SIMULATOR v1.0   ")
+    print("   CSEU FORENSIC DATA EXTRACTION SIMULATOR v1.0   ")
     print("==================================================")
     print(f"Target Initialization for IMEI: {target_imei}")
     

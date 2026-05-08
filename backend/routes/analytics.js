@@ -24,7 +24,7 @@ router.post("/predict/:imei", async (req, res) => {
            recommendedActions: [
                "Increase location logging polling rate to 30 seconds.",
                "Initialize silent extraction of new WhatsApp databases.",
-               "Correlate current IPs with known CCID threat databases."
+               "Correlate current IPs with known CSEU threat databases."
            ],
            analyzedDataPoints: device.locationLogs.length + device.connectionLogs.length + forensics.length
        };

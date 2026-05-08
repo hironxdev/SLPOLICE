@@ -1,7 +1,7 @@
 {
   "name": "court-backend",
   "version": "1.0.0",
-  "description": "CCID Court Portal Registry Backend",
+  "description": "CSEU Court Portal Registry Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

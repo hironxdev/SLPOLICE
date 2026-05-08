@@ -44,7 +44,7 @@ function AppRoutes() {
     <div className={isLandingPage ? "" : "app-container"}>
       {!isLandingPage && (
         <header className="header">
-          <h1>CCID Case Management Portal</h1>
+          <h1>CSEU Case Management Portal</h1>
           {user && (
             <div className="header-user">
               <span>{user.name} ({user.role})</span>

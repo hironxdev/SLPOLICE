@@ -1,7 +1,7 @@
 {
   "name": "ccid-desktop",
   "version": "1.0.0",
-  "description": "CCID Cyber Intelligence Desktop Application",
+  "description": "CSEU Cyber Intelligence Desktop Application",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

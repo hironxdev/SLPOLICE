@@ -56,5 +56,5 @@ export function setupTerminal(server) {
     });
   });
 
-  console.log("✅ CCID Cyber Command Terminal Bridge Ready.");
+  console.log("✅ CSEU Cyber Command Terminal Bridge Ready.");
 }

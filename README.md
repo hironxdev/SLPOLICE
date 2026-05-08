@@ -1,6 +1,6 @@
-# CCID Case Management Portal
+# CSEU Case Management Portal
 
-A minimal, functional government-style application structure for citizens to report complaints and CCID administrators to manage them.
+A minimal, functional government-style application structure for citizens to report complaints and CSEU administrators to manage them.
 
 ## Tech Stack
 

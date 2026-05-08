@@ -99,7 +99,7 @@ export default function Dashboard() {
 
           <div>
             <h1 className="text-base md:text-xl font-bold tracking-wider text-white leading-none">
-              CCID
+              CSEU
               <span className="hidden sm:inline"> COMMAND CENTER</span>
             </h1>
             <p className="text-[10px] md:text-xs text-cyan-500/60 uppercase tracking-widest font-mono leading-none mt-0.5">
